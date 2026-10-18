@@ -6,11 +6,11 @@ The mod ID is the project's `AssemblyName`. It names the DLL, the manifest,
 the mod's folder, its line in `loadorder` and its saved state.
 
 - It must be unique across all mods and must never change after release.
-- Use lowercase letters and digits only. The template asks for alphanumeric
-  IDs; the wiki also shows dots and dashes. Lowercase alphanumeric satisfies
-  both.
+- It must be a valid file name: no spaces and no characters that are invalid
+  in a Windows path. Dots and dashes are fine. (The template's comment asking
+  for alphanumeric IDs only is out of date; the wiki's rule applies.)
 - Prefix it with something of the author's to avoid collisions, for example
-  `authornamemodname`.
+  `authorname.modname`.
 
 ## Project file
 
