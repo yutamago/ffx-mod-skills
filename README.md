@@ -55,5 +55,4 @@ team. Questions about Fahrenheit belong in their Discord,
 
 ## License
 
-MIT OR Apache-2.0, at your option. Fahrenheit itself is LGPL-3.0-or-later and
-is not included here.
+MIT. Fahrenheit itself is LGPL-3.0-or-later and is not included here.
