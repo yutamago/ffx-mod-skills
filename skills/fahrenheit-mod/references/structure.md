@@ -44,7 +44,7 @@ time; never edit the generated file. File mods without code write it by hand:
 
 ```json
 {
-    "Id": "authornamemodname",
+    "Id": "authorname.modname",
     "Name": "Readable name",
     "Desc": "What it changes.",
     "Authors": "Author",
