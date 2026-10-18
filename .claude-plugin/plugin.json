@@ -1,0 +1,6 @@
+{
+  "name": "ffx-mod-skills",
+  "description": "Skills for making Final Fantasy X/X-2 HD Remaster mods with the Fahrenheit mod framework.",
+  "version": "0.1.0",
+  "license": "MIT"
+}

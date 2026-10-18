@@ -1,0 +1,11 @@
+{
+  "name": "ffx-mod-skills",
+  "owner": { "name": "ffx-mod-skills contributors" },
+  "plugins": [
+    {
+      "name": "ffx-mod-skills",
+      "source": "./",
+      "description": "Skills for making Final Fantasy X/X-2 HD Remaster mods with the Fahrenheit mod framework."
+    }
+  ]
+}
