@@ -1,0 +1,12 @@
+{
+  "$schema": "https://antigravity.google/schemas/v1/plugin.json",
+  "name": "ffx-mod-skills",
+  "displayName": "FFX mod skills",
+  "version": "0.3.0",
+  "description": "Skills for making, reviewing and reverse-engineering Final Fantasy X/X-2 HD Remaster mods with the Fahrenheit mod framework.",
+  "suggestedPrompts": [
+    "Make a Fahrenheit mod for FFX that changes how much gil battles give",
+    "Review my FFX-2 mod",
+    "Find the FFX function that starts a battle and confirm its signature"
+  ]
+}

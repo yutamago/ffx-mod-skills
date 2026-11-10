@@ -33,9 +33,10 @@ Fahrenheit's name when it has one.
 
 ## Every pull request includes
 
-- **The model that did the research**, by name and ID, for example
-  "Claude Opus 5.5 (`claude-opus-5-5`)". If several models worked on it, name
-  each and what it found. Put it in the PR description and in the commit
+- **The model that did the research**, by the exact name and ID it runs as,
+  whatever the vendor or agent tool, for example "Claude Opus 5.5
+  (`claude-opus-5-5`)". Don't guess an ID: if you don't know yours, ask the
+  user. If several models worked on it, name each and what it found. Put it in the PR description and in the commit
   message.
 - **The evidence for each finding**:
   - the game build (SHA-256 of `FFX.exe`);
@@ -65,7 +66,7 @@ Example description:
 
 ```text
 Findings from building <mod> (<what it needed>).
-Research: Claude Opus 5.5 (claude-opus-5-5).
+Research: <model name> (<model ID>).
 Build: FFX.exe sha256 0537b2a1…
 
 - symbols/ffx.sym 0x0065a620 PhyreScene_doDeleteMeshInstances: thiscall(scene),

@@ -132,8 +132,9 @@ Details and common failures: [references/troubleshooting.md](references/troubles
 Whenever you have written or changed a mod's code, have it reviewed before you
 tell the user it is done, in a loop:
 
-1. Start a **new subagent** for each round and have it review the mod with
-   the `ffx-mod-review` skill. Give it the mod's path and the scope; do not
+1. Start a **new subagent** for each round, with whatever your tool calls
+   it (subagent, agent, task), and have it review the mod with the
+   `ffx-mod-review` skill. Give it the mod's path and the scope; do not
    tell it what you think is fine.
 2. Fix every "must fix" and "should fix" finding, rebuild, and re-run your
    checks. If you think a finding is wrong, do not just skip it: write down
@@ -177,7 +178,7 @@ the game, often far from the call. Say when a signature is unconfirmed.
 New findings about FFX go back to ffx-rust as a pull request, naming the
 model that did the research and the evidence for each finding (see
 `ffx-find-game-function`,
-[sharing.md](../ffx-find-game-function/references/sharing.md)).
+[`ffx-find-game-function/references/sharing.md`](../ffx-find-game-function/references/sharing.md)).
 
 ## Getting help
 
@@ -197,3 +198,13 @@ them the link; do not contact anyone on their behalf.
 - [references/converting.md](references/converting.md): moving ASI, proxy-DLL and External File Loader mods to Fahrenheit
 - [references/troubleshooting.md](references/troubleshooting.md): build and launch problems
 - [references/review-loop.md](references/review-loop.md): reviewing your own mod with subagents until it is approved
+
+## Other skills of this plugin
+
+This skill belongs to the `ffx-mod-skills` plugin, with `ffx-mod-review` and `ffx-find-game-function`. Links to
+their files read `<skill>/<path>` and assume the skills sit side by side. If
+such a file is missing, the skill was installed on its own: look for the
+other skill where your agent keeps skills (for example `.agents/skills/`,
+`.github/skills/`, `.claude/skills/` or the user's home equivalents), or ask
+the user to install the whole plugin
+(https://github.com/yutamago/ffx-mod-skills).

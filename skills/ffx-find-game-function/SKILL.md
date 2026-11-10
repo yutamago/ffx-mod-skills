@@ -11,17 +11,17 @@ so the work is not done when you have a name: it is done when the signature
 is confirmed and a test hook has run in the game.
 
 The mod itself follows the `ffx-mod` skill
-([../ffx-mod/SKILL.md](../ffx-mod/SKILL.md)); hooking and calling
-are in its [calls.md](../ffx-mod/references/calls.md).
+([`ffx-mod/SKILL.md`](../ffx-mod/SKILL.md)); hooking and calling
+are in its [`ffx-mod/references/calls.md`](../ffx-mod/references/calls.md).
 
 ## Steps
 
 1. **Pin the game and the build.** Which game: FFX (`FFX.exe`), X-2 or
    Last Mission (both `FFX-2.exe`); see
-   [two games, one product](../ffx-mod/SKILL.md#two-games-one-product). Get
+   [two games, one product (`ffx-mod/SKILL.md`)](../ffx-mod/SKILL.md#two-games-one-product). Get
    the SHA-256 of that executable and the Fahrenheit version of the mod.
    Every address below is only valid for one executable of one build
-   ([versions.md](../ffx-mod/references/versions.md)). Never use an FFX
+   ([`ffx-mod/references/versions.md`](../ffx-mod/references/versions.md)). Never use an FFX
    address in X-2 or the other way round, and never mix builds. If the mod
    needs the function in both games, find and confirm it in each.
 2. **Look it up, in this order**, and stop at the first source with a real
@@ -84,7 +84,7 @@ offset      0x25A620 in FFX.exe (sha256 0537b2a1…)
 signature   thiscall void (PhyreScene* this)
 source      Fahrenheit FhCall (call.cs) / ffx.sym / own disassembly
 confirmed   yes: test hook ran on map change, this matched the scene pointer
-found by    Claude Opus 5.5 (claude-opus-5-5)
+found by    <model name and ID, for example Claude Opus 5.5 (claude-opus-5-5)>
 ```
 
 Say plainly when a signature is unconfirmed. Do not present a guess as a
@@ -95,7 +95,7 @@ fact.
 - **FFX findings go to [ffx-rust](https://github.com/yutamago/ffx-rust) as a
   new pull request**: names and notes in `symbols/ffx.sym`, format details
   in `docs/formats/`. Every pull request names the model that did the
-  research (for example "Claude Opus 5.5 (`claude-opus-5-5`)") and gives the
+  research, by name and ID (whichever model you are, from any vendor), and gives the
   evidence for each finding: game build, how it was found, how it was
   confirmed, how certain it is. Ask the user before opening it. Details and
   an example: [references/sharing.md](references/sharing.md).
@@ -104,3 +104,13 @@ fact.
   Fahrenheit Discord, Cid's Salvage Ship (https://discord.gg/AGx2grw9nD), in
   their own words.
 - Never open issues or pull requests on `fahrenheit-crew` repositories.
+
+## Other skills of this plugin
+
+This skill belongs to the `ffx-mod-skills` plugin, with `ffx-mod` and `ffx-mod-review`. Links to
+their files read `<skill>/<path>` and assume the skills sit side by side. If
+such a file is missing, the skill was installed on its own: look for the
+other skill where your agent keeps skills (for example `.agents/skills/`,
+`.github/skills/`, `.claude/skills/` or the user's home equivalents), or ask
+the user to install the whole plugin
+(https://github.com/yutamago/ffx-mod-skills).

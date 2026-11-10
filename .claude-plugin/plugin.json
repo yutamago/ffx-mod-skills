@@ -1,6 +1,20 @@
 {
   "name": "ffx-mod-skills",
   "description": "Skills for making, reviewing and reverse-engineering Final Fantasy X/X-2 HD Remaster mods with the Fahrenheit mod framework.",
-  "version": "0.2.0",
-  "license": "MIT"
+  "version": "0.3.0",
+  "author": {
+    "name": "ffx-mod-skills contributors",
+    "url": "https://github.com/yutamago/ffx-mod-skills"
+  },
+  "homepage": "https://github.com/yutamago/ffx-mod-skills",
+  "repository": "https://github.com/yutamago/ffx-mod-skills",
+  "license": "MIT",
+  "keywords": [
+    "final-fantasy-x",
+    "ffx",
+    "ffx-2",
+    "fahrenheit",
+    "modding",
+    "reverse-engineering"
+  ]
 }

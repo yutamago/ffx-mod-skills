@@ -1,0 +1,11 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "ffx-mod-skills",
+  "version": "0.3.0",
+  "description": "Skills for making, reviewing and reverse-engineering Final Fantasy X/X-2 HD Remaster mods with the Fahrenheit mod framework.",
+  "author": { "name": "ffx-mod-skills contributors", "url": "https://github.com/yutamago/ffx-mod-skills" },
+  "homepage": "https://github.com/yutamago/ffx-mod-skills",
+  "repository": "https://github.com/yutamago/ffx-mod-skills",
+  "license": "MIT",
+  "keywords": ["final-fantasy-x", "ffx", "ffx-2", "fahrenheit", "modding", "reverse-engineering"]
+}
