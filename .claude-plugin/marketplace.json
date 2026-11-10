@@ -5,7 +5,7 @@
     {
       "name": "ffx-mod-skills",
       "source": "./",
-      "description": "Skills for making Final Fantasy X/X-2 HD Remaster mods with the Fahrenheit mod framework."
+      "description": "Skills for making, reviewing and reverse-engineering Final Fantasy X/X-2 HD Remaster mods with the Fahrenheit mod framework."
     }
   ]
 }

@@ -18,6 +18,20 @@ public static FhCallHandle<d_SomeFunction> SomeFunction
     => new(new FhCallLocation("FFX.exe", 0x123450));   // offset in the module
 ```
 
+An X-2 function names `FFX-2.exe` instead; a function both games share takes
+both offsets:
+
+```cs
+public static FhCallHandle<d_X2Function> X2Function
+    => new(new FhCallLocation("FFX-2.exe", 0x134BD0));
+
+public static FhCallHandle<d_Shared> Shared
+    => new(new FhCallLocation(0x48E750, 0x34C250));   // (FFX offset, FFX-2 offset)
+```
+
+The two offsets of a shared function usually differ; look up each one. X-2 and Last Mission run the same `FFX-2.exe`, so their offsets are the
+same.
+
 `FhCallLocation` forms:
 
 | Constructor | Targets |
@@ -89,6 +103,9 @@ private int h_some_function(int a, nint b) {
 
 The games are 32-bit x86. Expect `cdecl`, `stdcall`, `thiscall` (object
 pointer in ECX) and `fastcall`. Compiler-generated functions sometimes pass
-values in other registers, which a delegate cannot express. If a function's
-convention is unclear, look at how its callers set up the stack and registers,
-and at its `ret` instruction (`ret N` means the callee pops N bytes).
+values in other registers, which a delegate cannot express; .NET does not
+support `fastcall` delegates either. If a function's convention is unclear,
+look at how its callers set up the stack and registers, and at its `ret`
+instruction (`ret N` means the callee pops N bytes). The
+`ffx-find-game-function` skill has the full method
+([signatures.md](../../ffx-find-game-function/references/signatures.md)).

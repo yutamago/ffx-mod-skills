@@ -88,6 +88,34 @@ ffx_ps2/ffx/master/jppc/battle/kernel/takara.bin
 In a code mod, put the `efl` folder in the project; the SDK copies
 `efl/x/**` and `efl/x2/**` into the build output.
 
+### Making the files
+
+For FFX, [ffx-rust](https://github.com/yutamago/ffx-rust) (a separate
+project, not part of Fahrenheit) reads the player's own `FFX_Data.vbf` and
+converts most game files to editable forms and back, byte for byte when
+unchanged. Build it with `cargo` and run `ffx <command> --help`:
+
+| Command | Files |
+|---|---|
+| `ffx vbf` | list and extract archive files |
+| `ffx kernel` | battle kernel tables (items, commands, …) as TOML |
+| `ffx monster` | monster stats and rewards as TOML |
+| `ffx battle` | encounter table and formations as TOML |
+| `ffx text` | event and battle dialogue as TOML |
+| `ffx script` | disassemble and assemble event and monster AI scripts |
+| `ffx texture` | textures to DDS and back |
+| `ffx model` | models to glTF |
+| `ffx motion` | motion groups as JSON |
+| `ffx sound` | list sound banks, export samples as WAV |
+
+Each format is described in its
+[`docs/formats`](https://github.com/yutamago/ffx-rust/tree/main/docs/formats)
+page. Put the result under the Fahrenheit mod's `efl/x/` at the file's path
+inside the archive, and check the path before shipping. Use only the
+converter: ffx-rust also has its own `dinput8.dll` loader and mod folder,
+which a Fahrenheit mod must not use or depend on. It covers FFX only, not
+X-2.
+
 ## Sharing code between mods
 
 A mod can build against another mod's types:
