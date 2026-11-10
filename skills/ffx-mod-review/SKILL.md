@@ -8,7 +8,7 @@ description: Review a Fahrenheit mod for Final Fantasy X, X-2 or X-2 Last Missio
 This skill reviews mods built on
 [Fahrenheit](https://github.com/fahrenheit-crew/fahrenheit). The rules it
 checks are in the `ffx-mod` skill
-([../ffx-mod/SKILL.md](../ffx-mod/SKILL.md)); this skill turns
+([`ffx-mod/SKILL.md`](../ffx-mod/SKILL.md)); this skill turns
 them into a list to go through. When this skill and the Fahrenheit wiki or the
 source of the SDK version in use disagree, the wiki and source win.
 
@@ -76,3 +76,13 @@ Never open issues or pull requests on `fahrenheit-crew` repositories, and do
 not post review results there. If a finding is really a gap in Fahrenheit,
 tell the user they can raise it on the Discord, Cid's Salvage Ship
 (https://discord.gg/AGx2grw9nD), in their own words.
+
+## Other skills of this plugin
+
+This skill belongs to the `ffx-mod-skills` plugin, with `ffx-mod` and `ffx-find-game-function`. Links to
+their files read `<skill>/<path>` and assume the skills sit side by side. If
+such a file is missing, the skill was installed on its own: look for the
+other skill where your agent keeps skills (for example `.agents/skills/`,
+`.github/skills/`, `.claude/skills/` or the user's home equivalents), or ask
+the user to install the whole plugin
+(https://github.com/yutamago/ffx-mod-skills).

@@ -1,11 +1,18 @@
 {
   "name": "ffx-mod-skills",
-  "owner": { "name": "ffx-mod-skills contributors" },
+  "owner": {
+    "name": "ffx-mod-skills contributors"
+  },
+  "metadata": {
+    "description": "Skills for making, reviewing and reverse-engineering Final Fantasy X/X-2 HD Remaster mods with the Fahrenheit mod framework.",
+    "version": "0.3.0"
+  },
   "plugins": [
     {
       "name": "ffx-mod-skills",
       "source": "./",
-      "description": "Skills for making, reviewing and reverse-engineering Final Fantasy X/X-2 HD Remaster mods with the Fahrenheit mod framework."
+      "description": "Skills for making, reviewing and reverse-engineering Final Fantasy X/X-2 HD Remaster mods with the Fahrenheit mod framework.",
+      "version": "0.3.0"
     }
   ]
 }

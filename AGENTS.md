@@ -20,6 +20,12 @@ When editing this repository:
   not support those. Write in your own words; do not copy Fahrenheit's wiki or
   code.
 - Keep each `SKILL.md` short; put detail in its `references/`.
-- A skill may link to another skill's references with a relative path
-  (`../ffx-mod/references/...`); all skills ship together.
+- A skill may link to another skill's files with a relative path, and the
+  link text names that skill and file, for example `ffx-mod/references/calls.md`,
+  so a skill installed on its own still says what is missing.
+- Keep the skills tool-neutral: they are installed in Claude Code, Codex,
+  GitHub Copilot and Google Antigravity. Do not rely on one tool's features
+  without a fallback.
+- The plugin has five manifests (see the README). Keep their name, version and
+  description equal, and run `python3 tools/check.py` before committing.
 - Never open issues or pull requests on `fahrenheit-crew` repositories.

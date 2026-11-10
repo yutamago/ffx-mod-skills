@@ -108,4 +108,4 @@ support `fastcall` delegates either. If a function's convention is unclear,
 look at how its callers set up the stack and registers, and at its `ret`
 instruction (`ret N` means the callee pops N bytes). The
 `ffx-find-game-function` skill has the full method
-([signatures.md](../../ffx-find-game-function/references/signatures.md)).
+([`ffx-find-game-function/references/signatures.md`](../../ffx-find-game-function/references/signatures.md)).

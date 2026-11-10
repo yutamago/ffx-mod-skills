@@ -6,7 +6,7 @@ Fahrenheit wiki and source.
 
 ## 1. Rebuilding what Fahrenheit has
 
-Full table: [builtins.md](../../ffx-mod/references/builtins.md).
+Full table: [`ffx-mod/references/builtins.md`](../../ffx-mod/references/builtins.md).
 Search the mod for these patterns:
 
 | Look for | Problem | Fix |
@@ -15,13 +15,13 @@ Search the mod for these patterns:
 | `new FhLogger(...)`, a logger field passed in, `Console.WriteLine`, a log file of the mod's own | the module already has `_logger` | use `_logger` |
 | `Assembly.Location`, `AppContext.BaseDirectory`, `Environment.CurrentDirectory`, hard-coded `mods/<id>` paths | `mod_context.Paths` has the mod's folders | use `mod_context.Paths.ModDir`, `ResourcesDir`, `EflDir`, `LangDir` |
 | `AssemblyInformationalVersionAttribute`, a `Version` constant | the manifest is in `mod_context.Manifest` | use `mod_context.Manifest.Version` |
-| A config file (`.toml`, `.json`, `.ini`) the mod reads itself, and code to create or merge it | Fahrenheit settings show in the F7 panel and are saved for the player | an `FhSettingProvider<T>` ([runtime.md](../../ffx-mod/references/runtime.md#settings)) |
+| A config file (`.toml`, `.json`, `.ini`) the mod reads itself, and code to create or merge it | Fahrenheit settings show in the F7 panel and are saved for the player | an `FhSettingProvider<T>` ([`ffx-mod/references/runtime.md`](../../ffx-mod/references/runtime.md#settings)) |
 | Files the mod writes to keep data | global and local state exist for this | the `init` state stream, `save_local_state` / `load_local_state` |
 | Static singletons or a registry so modules or mods can find each other | `FhModuleHandle<T>` does this and handles absent mods | `FhModuleHandle<T>.try_get_module` |
 | A hook on the main loop, new game, save or load | `FhApi.Events.Common.GameLoop` has these events | subscribe in `init` |
 | `GetAsyncKeyState`, a second input layer | `FhApi.Input` and ImGui | use those |
 | Its own base address arithmetic, memory read helpers | `FhUtil.ptr_at` / `get_at` / `set_at` | use those |
-| A delegate and `FhCallHandle` for a function `FhCall` already declares with a real signature | two declarations to keep in step | use the `FhCall` entry ([calls.md](../../ffx-mod/references/calls.md#the-call-library)) |
+| A delegate and `FhCallHandle` for a function `FhCall` already declares with a real signature | two declarations to keep in step | use the `FhCall` entry ([`ffx-mod/references/calls.md`](../../ffx-mod/references/calls.md#the-call-library)) |
 | Interfaces, factories or option objects with one implementation and one caller | more code than the mod needs | inline it |
 
 Shared libraries across a family of mods are fine for game logic and file
@@ -29,7 +29,7 @@ formats; flag them when they wrap Fahrenheit's own pieces.
 
 ## 2. Start-up and lifecycle
 
-Source: [runtime.md](../../ffx-mod/references/runtime.md#startup-order).
+Source: [`ffx-mod/references/runtime.md`](../../ffx-mod/references/runtime.md#startup-order).
 
 - The constructor only sets fields and creates the settings provider and
   module handles. No game calls, no file reading that could fail silently.
@@ -43,7 +43,7 @@ Source: [runtime.md](../../ffx-mod/references/runtime.md#startup-order).
 
 ## 3. Hooks and calls
 
-Source: [calls.md](../../ffx-mod/references/calls.md).
+Source: [`ffx-mod/references/calls.md`](../../ffx-mod/references/calls.md).
 
 - Each hook's delegate, `[UnmanagedCallConv]`, parameters and return type
   match each other and the game function. Mark any signature without a
@@ -58,13 +58,13 @@ Source: [calls.md](../../ffx-mod/references/calls.md).
   absolute addresses copied from a disassembler (`0x0065A620`). The difference
   is the image base `0x400000`.
 - Addresses match the game build the SDK version supports
-  ([versions.md](../../ffx-mod/references/versions.md)). Addresses from
+  ([`ffx-mod/references/versions.md`](../../ffx-mod/references/versions.md)). Addresses from
   the 2019 build do not work with `alpha12` and newer.
 
 ## 4. Which games
 
 The product holds FFX (`FFX.exe`), X-2 and Last Mission (both `FFX-2.exe`).
-Source: [ffx-mod SKILL.md](../../ffx-mod/SKILL.md#two-games-one-product).
+Source: [`ffx-mod/SKILL.md`](../../ffx-mod/SKILL.md#two-games-one-product).
 
 - Every module has `[FhLoad(...)]` listing only the games it works in, and
   the README says which games the mod supports.
@@ -81,8 +81,8 @@ Source: [ffx-mod SKILL.md](../../ffx-mod/SKILL.md#two-games-one-product).
 
 ## 5. Game folder, saves and assets
 
-Source: [SKILL.md rules](../../ffx-mod/SKILL.md#rules-every-mod-follows),
-[structure.md](../../ffx-mod/references/structure.md).
+Source: [SKILL.md rules (`ffx-mod/SKILL.md`)](../../ffx-mod/SKILL.md#rules-every-mod-follows),
+[`ffx-mod/references/structure.md`](../../ffx-mod/references/structure.md).
 
 - Nothing writes to the game folder, `FFX.exe`, `FFX-2.exe`, the `.vbf` archives or the
   player's save files.
@@ -97,8 +97,8 @@ Source: [SKILL.md rules](../../ffx-mod/SKILL.md#rules-every-mod-follows),
 
 ## 6. Project and packaging
 
-Source: [structure.md](../../ffx-mod/references/structure.md),
-[troubleshooting.md](../../ffx-mod/references/troubleshooting.md).
+Source: [`ffx-mod/references/structure.md`](../../ffx-mod/references/structure.md),
+[`ffx-mod/references/troubleshooting.md`](../../ffx-mod/references/troubleshooting.md).
 
 - `AssemblyName` (the mod ID) is a valid file name, has an author prefix, and
   has not changed since a release.
