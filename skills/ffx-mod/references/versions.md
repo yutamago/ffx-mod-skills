@@ -13,6 +13,9 @@ Source: the wiki's
 [Compatibility guide](https://github.com/fahrenheit-crew/fahrenheit/wiki/Compatibility-guide).
 Check it again; this table may be out of date.
 
+The game build is the build of the whole Steam product, so one Fahrenheit
+version covers `FFX.exe` and `FFX-2.exe` of the same build.
+
 Only genuine Steam copies are supported. Modified executables are not.
 
 ## Choosing a version

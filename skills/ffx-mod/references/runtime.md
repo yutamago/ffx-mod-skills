@@ -20,6 +20,10 @@ A code mod contains one or more modules: public classes deriving from
 Never construct a module yourself; Fahrenheit does. Split a mod into several
 modules when parts are independent or game-specific.
 
+`init` receives the mod's `FhModContext`: its folders (`Paths`) and its
+manifest (`Manifest`, including the version). Use these and `_logger`
+directly; [builtins.md](builtins.md) lists what else not to rebuild.
+
 ## Startup order
 
 1. Every module of every mod is constructed.
