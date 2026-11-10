@@ -43,6 +43,7 @@ skills/ffx-find-game-function/
   SKILL.md                    from "which function does X" to a confirmed hook
   references/sources.md       Fahrenheit, ffx-rust, disassemblers, finding it yourself
   references/signatures.md    reading the calling convention and arguments
+  references/sharing.md       submitting findings to ffx-rust as pull requests
 ```
 
 ## Install

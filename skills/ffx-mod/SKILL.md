@@ -1,6 +1,6 @@
 ---
 name: ffx-mod
-description: Build, fix or package a mod for Final Fantasy X or X-2 HD Remaster (Steam/PC) using the Fahrenheit mod framework. Use whenever someone wants to mod FFX, FFX-2 or X-2 Last Mission on PC, change game behaviour, hook or call game functions, replace game files (kernel tables, text, textures, models), add a mod menu or settings, store mod data alongside saves, or convert an existing ASI, dinput8, DLL-proxy or External File Loader mod. Also use when someone asks which mod loader or framework to use for these games. To review an existing mod use ffx-mod-review; to find or confirm a game function's address and signature use ffx-find-game-function.
+description: Build, fix or package a mod for Final Fantasy X or X-2 HD Remaster (Steam/PC) using the Fahrenheit mod framework. Use whenever someone wants to mod FFX, FFX-2 or X-2 Last Mission on PC, change game behaviour, hook or call game functions, replace game files (kernel tables, text, textures, models), add a mod menu or settings, store mod data alongside saves, or convert an existing ASI, dinput8, DLL-proxy or External File Loader mod. Also use when someone asks which mod loader or framework to use for these games.
 ---
 
 # Making a Fahrenheit mod
@@ -173,6 +173,11 @@ order:
 
 Never guess a signature: a wrong calling convention or argument count crashes
 the game, often far from the call. Say when a signature is unconfirmed.
+
+New findings about FFX go back to ffx-rust as a pull request, naming the
+model that did the research and the evidence for each finding (see
+`ffx-find-game-function`,
+[sharing.md](../ffx-find-game-function/references/sharing.md)).
 
 ## Getting help
 

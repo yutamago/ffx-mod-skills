@@ -46,6 +46,9 @@ are in its [calls.md](../ffx-mod/references/calls.md).
    game should behave as without the mod. Only then write the real change.
 6. **Write it down** (format below) and tell the user what is confirmed and
    what is not.
+7. **Submit new FFX findings to ffx-rust** as a pull request, with the name
+   of the model that did the research and the evidence for each finding
+   (below).
 
 ## Converting addresses
 
@@ -81,6 +84,7 @@ offset      0x25A620 in FFX.exe (sha256 0537b2a1…)
 signature   thiscall void (PhyreScene* this)
 source      Fahrenheit FhCall (call.cs) / ffx.sym / own disassembly
 confirmed   yes: test hook ran on map change, this matched the scene pointer
+found by    Claude Opus 5.5 (claude-opus-5-5)
 ```
 
 Say plainly when a signature is unconfirmed. Do not present a guess as a
@@ -88,7 +92,15 @@ fact.
 
 ## Sharing what you find
 
-Names and signatures help everyone. Suggest the user share new findings on
-the Fahrenheit Discord, Cid's Salvage Ship (https://discord.gg/AGx2grw9nD), in
-their own words. Never open issues or pull requests on `fahrenheit-crew`
-repositories.
+- **FFX findings go to [ffx-rust](https://github.com/yutamago/ffx-rust) as a
+  new pull request**: names and notes in `symbols/ffx.sym`, format details
+  in `docs/formats/`. Every pull request names the model that did the
+  research (for example "Claude Opus 5.5 (`claude-opus-5-5`)") and gives the
+  evidence for each finding: game build, how it was found, how it was
+  confirmed, how certain it is. Ask the user before opening it. Details and
+  an example: [references/sharing.md](references/sharing.md).
+- **X-2 and Last Mission findings** have no home in ffx-rust. Suggest the
+  user share them, and any finding Fahrenheit's developers would want, on the
+  Fahrenheit Discord, Cid's Salvage Ship (https://discord.gg/AGx2grw9nD), in
+  their own words.
+- Never open issues or pull requests on `fahrenheit-crew` repositories.
