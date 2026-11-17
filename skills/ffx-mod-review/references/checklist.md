@@ -34,7 +34,10 @@ Source: the wiki's [Startup](https://github.com/fahrenheit-crew/fahrenheit/wiki/
 
 - The constructor only sets fields and creates the settings provider and
   module handles. No game calls, no file reading that could fail silently.
-- Every hook is registered in `init`. The module checks each `hook()`
+- Every hook is registered in `init`. (A module with a single hook and no
+  other callbacks may just `return` the `hook()` result, as the wiki's Calls
+  example does.) A module with several hooks, or with
+  `render_imgui`, state callbacks or event handlers, checks each `hook()`
   result; on a failure it does not rely on returning `false`, which only
   logs a warning and leaves the module loaded. It sets a field that its
   hooks (still chaining), `render_imgui`, state callbacks and event handlers

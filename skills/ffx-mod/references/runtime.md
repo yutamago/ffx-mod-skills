@@ -41,11 +41,15 @@ and goes on to the next module
   `load_local_state`;
 - other modules still get it through `FhModuleHandle<T>`.
 
-So the return value only chooses Fahrenheit's log line. When something in
-`init` fails, for example a `hook()` call (during `init` it returns `false`
-only when the target cannot be found, such as an `FFX.exe` offset while X-2
-runs: `hook` and `chain_add` in
-[`src/core/handles.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/handles.cs)):
+So the return value only chooses Fahrenheit's log line.
+
+During `init`, `hook()` returns `false` only when the target cannot be
+found, for example an export missing from a DLL (`hook` and `chain_add` in
+[`src/core/handles.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/handles.cs)). An `FFX.exe` offset in a
+module that also loads in X-2 is not such a case but a design error: fix it
+with `[FhLoad]` or the `(ffx, ffx2)` constructor.
+
+When something in `init` fails:
 
 1. log why through `_logger`;
 2. set a field that marks the module disabled;

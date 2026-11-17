@@ -11,7 +11,7 @@ own prologue and `ret`, and two or three of its callers.
 |---|---|---|
 | Callee takes no register argument; ends with plain `ret`; callers clean up with `add esp, N`, or `pop ecx` for one word, somewhere after the call (no arguments: nothing to clean up) | `cdecl` | `CallingConvention.Cdecl` / `CallConvCdecl` |
 | Callee takes no register argument; ends with `ret N` | `stdcall` | `CallingConvention.StdCall` / `CallConvStdcall` |
-| Callee takes an argument in `ECX` and in no other register, usually an object pointer; ends with `ret N`, or with plain `ret` only when it reads no stack arguments | `thiscall` | `CallingConvention.ThisCall` / `CallConvThiscall`; `ECX` is the first parameter |
+| Callee takes an argument in `ECX` and in no other register, usually an object pointer; ends with `ret N`, or with plain `ret` only when it reads no stack arguments (for a thunk or tail call, judge by the target) | `thiscall` | `CallingConvention.ThisCall` / `CallConvThiscall`; `ECX` is the first parameter |
 | Callee takes an argument in `EDX`, `EAX`, `EBX`, `ESI`, `EDI` or any other register besides `ECX`; or takes one in `ECX` plus stack arguments, ends with plain `ret`, and its callers clean up the stack | a register convention the compiler chose | none; see below |
 
 A function **takes an argument in a register** when it uses the register's
@@ -36,6 +36,12 @@ word after `push ebp; mov ebp, esp`, `[ebp+0xc]` the second, and so on
 (without that frame, `[esp+4]` at entry is the first). Check every path
 through the function, not only the first few instructions.
 
+If the function ends by jumping to another function instead of returning (a
+thunk such as a lone `jmp`, or a tail call), follow the jump: the target's
+`ret N` and stack reads count, and so do its register arguments. For
+example, `0x00431170` is a lone `jmp 0x0044ce10`, and the target reads one
+stack word.
+
 The callers only confirm it, and are easy to miscount:
 
 - MSVC often merges the cleanup of several calls into one later
@@ -43,12 +49,13 @@ The callers only confirm it, and are easy to miscount:
   the argument count.
 - `pop ecx` right after a call removes one word; it is cleanup, not an
   argument.
-- A caller may push the later arguments, call another function to compute
-  the first, then push its result: `push x; push y; call g; add esp, 4;
+- A caller may push `f`'s later arguments (`x`), then `g`'s argument (`y`),
+  call `g` to compute `f`'s first argument, and push its result: `push x; push y; call g; add esp, 4;
   push eax; call f` gives `f` two words, not one.
 - `sub esp, 8` followed by `fstp qword ptr [esp]` passes a `double`.
 
-If the callers and the callee disagree, the callee's reads win.
+If the callers and the callee (or the function it jumps to) disagree, the
+callee's reads win.
 
 Fahrenheit's own hand-checked `FhCall` entries use only `Cdecl`, `StdCall`
 and `ThisCall` in both games (see
