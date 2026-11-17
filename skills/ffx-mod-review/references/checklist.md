@@ -15,7 +15,7 @@ Search the mod for these patterns:
 | `new FhLogger(...)`, a logger field passed in, `Console.WriteLine`, a log file of the mod's own | the module already has `_logger` | use `_logger` |
 | `Assembly.Location`, `AppContext.BaseDirectory`, `Environment.CurrentDirectory`, hard-coded `mods/<id>` paths | `mod_context.Paths` has the mod's folders | use `mod_context.Paths.ModDir`, `ResourcesDir`, `EflDir`, `LangDir` |
 | `AssemblyInformationalVersionAttribute`, a `Version` constant | the manifest is in `mod_context.Manifest` | use `mod_context.Manifest.Version` |
-| A config file (`.toml`, `.json`, `.ini`) the mod reads itself, and code to create or merge it | Fahrenheit settings show in the F7 panel and are saved for the player | an `FhSettingProvider<T>` ([`ffx-mod/references/runtime.md`](../../ffx-mod/references/runtime.md#settings)) |
+| A config file (`.toml`, `.json`, `.ini`) the mod reads itself, and code to create or merge it | Fahrenheit settings show in the F7 panel and are saved for the player | an `FhSettingProvider<T>` (wiki: [Settings](https://github.com/fahrenheit-crew/fahrenheit/wiki/Settings)) |
 | Files the mod writes to keep data | global and local state exist for this | the `init` state stream, `save_local_state` / `load_local_state` |
 | Static singletons or a registry so modules or mods can find each other | `FhModuleHandle<T>` does this and handles absent mods | `FhModuleHandle<T>.try_get_module` |
 | A hook on the main loop, new game, save or load | `FhApi.Events.Common.GameLoop` has these events | subscribe in `init` |
@@ -52,6 +52,9 @@ Source: the wiki's [Calls](https://github.com/fahrenheit-crew/fahrenheit/wiki/Ca
   source (Fahrenheit's `FhCall`, ffx-rust's `symbols/ffx.sym`, a disassembly)
   as unconfirmed.
 - No hook or call on a handle whose delegate is `d_UnknownFn`.
+- No delegate guessed for a function that takes arguments in `EDX` or
+  another register besides `ECX`
+  ([`ffx-find-game-function/references/signatures.md`](../../ffx-find-game-function/references/signatures.md#conventions-a-delegate-cannot-express)).
 - Each hook calls `chain_from(this_hook)` unless it replaces the function on
   purpose, and the code or README says so.
 - Calls use `fnptr?.Invoke` or check for null where the target can be

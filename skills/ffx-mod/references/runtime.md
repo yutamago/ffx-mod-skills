@@ -17,8 +17,6 @@ say ([how to read the wiki offline](../SKILL.md#getting-help)).
   manifest (`Manifest`, including the version). The wiki's examples show the
   parameter but not what it holds. Use it and `_logger` directly;
   [builtins.md](builtins.md) lists what else not to rebuild.
-- Split a mod into several modules when parts are independent or
-  game-specific.
 
 ## Startup order
 
@@ -45,9 +43,11 @@ Manifests pages do not describe the flag
 
 ## Settings
 
-The wiki page lists `FhSettingToggle` and `FhSettingNumber<T>`. Check
-`src/core/settings.cs` of the Fahrenheit version in use for the other
-built-in types before writing one ([builtins.md](builtins.md)).
+The wiki page lists `FhSettingToggle` and `FhSettingNumber<T>`. Current
+versions also have `FhSettingText`, `FhSettingsCategory` (a group of
+settings) and `FhSettingReference<T>`
+([`src/core/settings.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/settings.cs)); check that file of
+the version in use before writing a setting type of your own.
 
 ## Game text
 

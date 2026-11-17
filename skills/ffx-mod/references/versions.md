@@ -10,9 +10,8 @@ changes with each release. For local SDKs and building Fahrenheit, read the
 pages. This file holds only what those pages do not say
 ([how to read the wiki offline](../SKILL.md#getting-help)).
 
-- Fahrenheit does not check the game version, so a mismatch shows up as
-  crashes, not as an error message. Confirm the pair before debugging
-  anything else.
+- A mismatch shows up as crashes, not as an error message. Confirm the pair
+  before debugging anything else.
 - The game build is the build of the whole Steam product, so one Fahrenheit
   version covers `FFX.exe` and `FFX-2.exe` of the same build.
 

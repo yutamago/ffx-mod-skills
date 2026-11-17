@@ -23,6 +23,9 @@ pages do not say ([how to read the wiki offline](../SKILL.md#getting-help)).
 Copy the template's `.csproj` and keep its structure. Beyond the wiki's list
 of properties:
 
+- `AssemblyTitle` (the display name) may change after release; the mod ID
+  may not. `Product` goes into the DLL's Windows file properties, and
+  `Authors` is comma-separated.
 - `Version` is a NuGet version string; the SDK appends the commit hash when
   the project is under git.
 - If `RepositoryUrl` is set, it becomes the manifest's `Link` and
@@ -40,8 +43,9 @@ of properties:
 
 - Never edit the manifest the SDK generates for a code mod.
 - `Dependencies` lists the mod IDs this mod needs. The wiki does not describe
-  the field. Load order no longer has to follow dependencies for DLLs to
-  resolve; the field is meant for the upcoming mod manager, and the SDK
+  the field. Load order does not have to follow dependencies for DLLs to
+  resolve; the field is meant for the mod manager in progress
+  ([`src/modmgr`](https://github.com/fahrenheit-crew/fahrenheit/tree/main/src/modmgr)), and the SDK
   currently writes it as empty.
 
 ## File mods (`efl`)

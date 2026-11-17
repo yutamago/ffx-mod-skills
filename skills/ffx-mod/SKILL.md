@@ -74,7 +74,7 @@ per-game modules or per-game values ([references/calls.md](references/calls.md),
   user installs Fahrenheit once and every mod builds on that same copy.
 - Never write to the game folder, `FFX.exe`, `FFX-2.exe`, the `.vbf` archives or the
   player's save files. Replace files through `efl`; keep mod data in global or
-  local state ([references/runtime.md](references/runtime.md)).
+  local state (wiki: [State](https://github.com/fahrenheit-crew/fahrenheit/wiki/State)).
 - Never ship copyrighted game assets that Fahrenheit can load from the game at
   runtime.
 - Hook and call game functions only through `FhCallHandle<T>`
@@ -185,7 +185,7 @@ model that did the research and the evidence for each finding (see
 
 - Fahrenheit wiki: https://github.com/fahrenheit-crew/fahrenheit/wiki.
   The references name the wiki page to read for each subject and add only
-  what the page lacks. If you cannot open web pages, clone
+  what the page lacks. If you can run git but cannot fetch web pages, clone
   `https://github.com/fahrenheit-crew/fahrenheit.wiki.git`: each page is one
   Markdown file.
 - Discord, Cid's Salvage Ship: https://discord.gg/AGx2grw9nD

@@ -11,8 +11,11 @@ own prologue and `ret`, and two or three of its callers.
 |---|---|---|
 | Callee ends with plain `ret`; callers `add esp, N` after the call | `cdecl` | `CallingConvention.Cdecl` / `CallConvCdecl` |
 | Callee ends with `ret N`; nothing in `ECX` that the callee reads first | `stdcall` | `CallingConvention.StdCall` / `CallConvStdcall` |
-| Callee reads `ECX` before writing it (usually as an object pointer), ends with `ret N` or `ret` | `thiscall` | `CallingConvention.ThisCall` / `CallConvThiscall`; `ECX` is the first parameter |
-| Callee reads `EDX`, `EAX`, `ESI` or `EDI` as an argument before writing it | a register convention the compiler made up | none; see below |
+| Callee reads `ECX` and no other register (except as below) before writing it, usually as an object pointer; ends with `ret N` or `ret` | `thiscall` | `CallingConvention.ThisCall` / `CallConvThiscall`; `ECX` is the first parameter |
+| Callee reads `EDX`, `EAX`, `ESI` or `EDI` as an argument before writing it, with or without `ECX` | a register convention the compiler chose | none; see below |
+
+Check the last row before the `thiscall` row: a function that reads `ECX`
+and `EDX` is not `thiscall`.
 
 `ret N` means the callee removes N bytes of arguments: N / 4 stack words.
 With `cdecl`, count the words from the callers' `push`es or from the size of
@@ -37,26 +40,35 @@ and `ThisCall` in both games (see `src/core/call.cs`, `src/core/ffx/call.cs` and
 
 ## Conventions a delegate cannot express
 
-Apart from compiler helpers such as `__security_check_cookie`, neither game
-has a function declared `__fastcall`: that helper is the only entry with that
-convention in Fahrenheit's function lists
-([`src/step/data`](https://github.com/fahrenheit-crew/fahrenheit/tree/main/src/step/data)).
+Fahrenheit's function lists
+([`src/step/data`](https://github.com/fahrenheit-crew/fahrenheit/tree/main/src/step/data))
+record a calling convention for only about 160 of some 56,000 functions per
+game; the rest are `unknown`. Among the recorded ones, the only `__fastcall`
+is the compiler helper `__security_check_cookie`.
 
-Whole-program optimisation still lets MSVC pass the arguments of internal
-functions in registers. ffx-rust's `symbols/ffx.sym` (not a Fahrenheit
-project) marks these in its comments with wording such as `fastcall(a, b)`
-or `fastcall-caller-pops`. For example, in the October 2026 `FFX.exe`,
-`0x0042e840` takes its two arguments in `ECX` and `EDX`, and `0x00401690`
-takes a third on the stack that the caller removes. Most are in bundled
-library code. A comment that names a single argument in `ECX` describes what
-a `ThisCall` delegate already expresses.
+MSVC's whole-program optimisation still passes the arguments of some
+internal functions in registers. ffx-rust's `symbols/ffx.sym` (not a
+Fahrenheit project) marks these in its comments with wording such as
+`fastcall(a, b)` or `fastcall-caller-pops`. In the `FFX.exe` with SHA-256
+`0537b2a1…686d` (the build ffx.sym's header names):
 
-No delegate can express an argument in `EDX` or another register. Then:
+- `0x0042e840` takes two arguments in `ECX` and `EDX` and none on the stack,
+  the fastcall layout;
+- `0x00401690` takes two in `ECX` and `EDX` and a third on the stack that
+  the caller removes, which no standard convention describes.
+
+Most of these are in bundled library code. A comment that names a single
+argument in `ECX` describes what a `ThisCall` delegate already expresses.
+
+No delegate can express an argument in `EDX` or another register (.NET does
+not support `CallingConvention.FastCall`:
+[CallingConvention](https://learn.microsoft.com/dotnet/api/system.runtime.interopservices.callingconvention)).
+Then:
 
 1. Hook a caller or callee with a standard convention that sees the same
    data; or
 2. tell the user they can ask on the Fahrenheit Discord whether there is a
-   supported way.
+   supported way, or raise an issue themselves, in their own words.
 
 Do not hook such a function with a guessed delegate. It will corrupt
 registers or the stack and crash later.

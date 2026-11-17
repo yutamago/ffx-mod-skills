@@ -44,10 +44,12 @@ also switches off every later mod's hook on that function.
 ### Calling conventions in these games
 
 The wiki shows where the convention goes but not how to find it. The games
-are 32-bit x86. Fahrenheit's function lists
+are 32-bit x86. Fahrenheit's hand-checked `FhCall` entries use `cdecl`,
+`stdcall` and `thiscall` (object pointer in `ECX`), and a delegate can
+express all three. Its function lists
 ([`src/step/data`](https://github.com/fahrenheit-crew/fahrenheit/tree/main/src/step/data))
-and its hand-checked `FhCall` entries use `cdecl`, `stdcall` and `thiscall`
-(object pointer in `ECX`), and a delegate can express all three.
+record a convention for only about 160 functions per game; most entries say
+`unknown`, so work it out from the machine code.
 
 If a function's convention is unclear, look at how its callers set up the
 stack and registers, and at its `ret` instruction (`ret N` means the function

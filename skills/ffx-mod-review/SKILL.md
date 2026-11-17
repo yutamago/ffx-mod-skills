@@ -74,8 +74,8 @@ new.
 
 Never open issues or pull requests on `fahrenheit-crew` repositories, and do
 not post review results there. If a finding is really a gap in Fahrenheit,
-tell the user they can raise it on the Discord, Cid's Salvage Ship
-(https://discord.gg/AGx2grw9nD), in their own words.
+tell the user they can ask on the Discord, Cid's Salvage Ship
+(https://discord.gg/AGx2grw9nD), or raise an issue themselves, in their own words.
 
 ## Other skills of this plugin
 

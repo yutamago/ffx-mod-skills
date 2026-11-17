@@ -14,7 +14,7 @@ in this table. If it is there, use the built-in directly from the module.
 | A log | `_logger` on your module (`Debug`, `Info`, `Warning`, `Error`, `Fatal`); one log file per module | your own logger, or passing a logger around |
 | The mod's folder and subfolders | `mod_context.Paths` in `init`: `ModDir`, `ResourcesDir`, `EflDir`, `LangDir`, `ManifestPath` | `Assembly.Location`, `AppContext.BaseDirectory`, working-directory guesses |
 | The mod's ID, name, version, authors | `mod_context.Manifest` (`Id`, `Name`, `Version`, `Authors`, `Dependencies`, …) | assembly attributes, a version constant |
-| Settings players can change | an `FhSettingProvider<YourModule>` with `FhSettingToggle`, `FhSettingNumber<T>`, `FhSettingText`, `FhSettingsCategory` ([runtime.md](runtime.md#settings)) | your own TOML/JSON/INI config file and its loader |
+| Settings players can change | an `FhSettingProvider<YourModule>` with `FhSettingToggle`, `FhSettingNumber<T>`, `FhSettingText`, `FhSettingsCategory` (wiki: [Settings](https://github.com/fahrenheit-crew/fahrenheit/wiki/Settings); [runtime.md](runtime.md#settings) for more types) | your own TOML/JSON/INI config file and its loader |
 | Data kept between sessions | the global state stream `init` receives | a file of your own next to the DLL |
 | Data kept per save game | `save_local_state` / `load_local_state` | writing into the game's saves, or side files keyed by slot |
 | Another mod's module | `FhModuleHandle<T>` (`try_get_module`), or `FhApi.Mods` to list loaded mods and modules | static singletons, a registry of your own, reflection |
@@ -55,5 +55,5 @@ provider itself.
 
 If Fahrenheit lacks what the mod needs, write the smallest thing that does the
 job inside the mod, and tell the user it is a gap they could raise on the
-Discord in their own words. Do not reach into Fahrenheit's `internal` types
+Discord or as an issue themselves, in their own words. Do not reach into Fahrenheit's `internal` types
 with reflection: `src/core/api.cs` says to ask the developers instead.

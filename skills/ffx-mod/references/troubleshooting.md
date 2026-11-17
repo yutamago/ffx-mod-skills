@@ -6,8 +6,9 @@ first for problems with the game version, running as administrator, Linux,
 and other tools (Special K, RivaTuner, Malwarebytes, older file loaders).
 The [Installation guide](https://github.com/fahrenheit-crew/fahrenheit/wiki/Installation-guide)
 covers prerequisites and launching, and the
-[SDK](https://github.com/fahrenheit-crew/fahrenheit/wiki/SDK) page covers a
-local SDK that is ignored after a rebuild. The symptoms below are not on
+[SDK](https://github.com/fahrenheit-crew/fahrenheit/wiki/SDK) page covers a local SDK that is ignored after a rebuild, and
+the [Build and deployment guide](https://github.com/fahrenheit-crew/fahrenheit/wiki/Build-and-deployment-guide) warns about
+build errors when the folder path has special characters. The symptoms below are not on
 those pages ([how to read the wiki offline](../SKILL.md#getting-help)).
 
 ## Build
@@ -21,11 +22,12 @@ those pages ([how to read the wiki offline](../SKILL.md#getting-help)).
 
 | Symptom | Cause and fix |
 |---|---|
-| Fahrenheit exits at once | A mod listed in `loadorder` has no valid manifest whose `Id` equals its folder name. |
+| Fahrenheit exits at once | A line in `loadorder` names a folder that has no `<line>.manifest.json`, or that manifest is not valid JSON. Fahrenheit reads `mods/<line>/<line>.manifest.json` for each line and stops if it cannot ([`src/core/bootloader.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/bootloader.cs), `_init_manifests`). |
 | Crashes at boot or early in the game | Game build and Fahrenheit version do not match ([versions.md](versions.md)); or a hook has the wrong signature. |
-| No mods are listed in the top-left corner | `mods/loadorder` is missing or unreadable. Fahrenheit logs a warning and loads only its own runtime ([`src/core/bootloader.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/bootloader.cs)). |
-| One mod is not listed in the top-left corner | Its ID is not in `loadorder`, its folder name differs from the ID, or no module's `[FhLoad]` includes the running game. |
-| Hook never runs | It was registered outside `init`, or an earlier mod's hook does not chain. |
+| The top-left corner shows `1 mods loaded` and only *Fahrenheit Runtime* | `mods/loadorder` is missing or unreadable. Fahrenheit loads only its own runtime and writes a warning to the framework log in `logs/<session>/` ([`src/core/bootloader.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/bootloader.cs), `_init_load_order`). |
+| One mod is not listed in the top-left corner | Its ID is not in `loadorder`. |
+| A mod is listed but its code never runs | The manifest's `Id` differs from the folder and DLL name, so Fahrenheit looks for a DLL that does not exist; or no module's `[FhLoad]` includes the running game. |
+| Hook never runs | It was registered after `init` on a function that was already hooked, or an earlier mod's hook does not chain. |
 
 ## Crashes
 
