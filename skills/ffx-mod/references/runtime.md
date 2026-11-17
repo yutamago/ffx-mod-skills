@@ -74,6 +74,14 @@ much that its saves should not mix with vanilla saves. The wiki's State and
 Manifests pages do not describe the flag
 ([`FhManifestFlags`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/module.cs)).
 
+Also not on the wiki: `load_local_state` is not called when the loaded save
+has no state file for the module
+([`src/core/state.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/state.cs), `state_load_slot`). Fields
+filled from the previously loaded save then remain, and the next save writes
+them into the new one. Reset per-save fields yourself when a save is loaded:
+`PostLoadGame` is raised after the state callbacks on every load
+([`src/runtime/save_impl.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/runtime/save_impl.cs)).
+
 ## Settings
 
 The wiki page lists `FhSettingToggle` and `FhSettingNumber<T>`. Current

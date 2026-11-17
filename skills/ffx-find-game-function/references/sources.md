@@ -50,7 +50,7 @@ far more of the executable.
     `call.cs` ones are their hand-checked signatures.
   - `BSim` matches and comments starting `guess:` are the least certain:
     confirm before relying on them.
-  - Some functions take arguments in registers a C# delegate cannot
+  - Some functions take arguments in a way a C# delegate cannot
     express (the comments say for example `fastcall-caller-pops` or name an
     `edx` argument); see [signatures.md](signatures.md#conventions-a-delegate-cannot-express).
 - **`docs/formats/*.md`**: one page per area (`battle.md`, `field.md`,

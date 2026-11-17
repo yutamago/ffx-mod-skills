@@ -22,8 +22,8 @@ that register just before the `call`. These do not count:
 - a register pushed in the prologue and popped before `ret` (`push esi`,
   `push edi`, `push ebx`): the function only preserves it;
 - `push ecx` at the start that only makes room for a local variable; for
-  example Fahrenheit's `Cdecl` entry `graphicVFXCreate` (`FFX.exe+0x244DE0`)
-  starts `push ebp; mov ebp, esp; push ecx; push esi`.
+  example Fahrenheit's `Cdecl` entry `graphicVFXCreate` (offset `0x244DE0`,
+  absolute `0x00644de0`) starts `push ebp; mov ebp, esp; push ecx; push esi`.
 
 Check the last row first: a function that matches it is not `cdecl`,
 `stdcall` or `thiscall`, even if it also fits one of those rows.
@@ -39,7 +39,8 @@ through the function, not only the first few instructions.
 If the function ends by jumping to another function instead of returning (a
 thunk such as a lone `jmp`, or a tail call), follow the jump: the target's
 `ret N` and stack reads count, and so do its register arguments, except a
-register the thunk writes before the jump. For example:
+register the thunk writes before the jump. For example (absolute addresses
+in the `FFX.exe` named under "Conventions a delegate cannot express"):
 
 - `0x00431170` is a lone `jmp 0x0044ce10`, and the target reads one stack
   word, so the thunk takes one;
