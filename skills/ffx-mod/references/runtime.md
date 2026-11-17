@@ -45,9 +45,10 @@ So the return value only chooses Fahrenheit's log line.
 
 During `init`, `hook()` returns `false` only when the target cannot be
 found, for example an export missing from a DLL (`hook` and `chain_add` in
-[`src/core/handles.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/handles.cs)). An `FFX.exe` offset in a
-module that also loads in X-2 is not such a case but a design error: fix it
-with `[FhLoad]` or the `(ffx, ffx2)` constructor.
+[`src/core/handles.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/handles.cs)). It also happens for
+an `FFX.exe` offset while X-2 runs, but that is a design error to fix with
+`[FhLoad]` or the `(ffx, ffx2)` constructor, not a runtime failure to
+handle.
 
 When something in `init` fails:
 
