@@ -11,7 +11,7 @@ own prologue and `ret`, and two or three of its callers.
 |---|---|---|
 | Callee takes no register argument; ends with plain `ret`; callers clean up with `add esp, N`, or `pop ecx` for one word, somewhere after the call (no arguments: nothing to clean up) | `cdecl` | `CallingConvention.Cdecl` / `CallConvCdecl` |
 | Callee takes no register argument; ends with `ret N` | `stdcall` | `CallingConvention.StdCall` / `CallConvStdcall` |
-| Callee takes an argument in `ECX` and in no other register, usually an object pointer; ends with `ret N`, or with plain `ret` only when it reads no stack arguments (for a thunk or tail call, judge by the target) | `thiscall` | `CallingConvention.ThisCall` / `CallConvThiscall`; `ECX` is the first parameter |
+| Callee takes an argument in `ECX` and in no other register, usually an object pointer; ends with `ret N`, or with plain `ret` only when it reads no stack arguments (for a thunk or tail call, judge by the target, minus registers the thunk sets) | `thiscall` | `CallingConvention.ThisCall` / `CallConvThiscall`; `ECX` is the first parameter |
 | Callee takes an argument in `EDX`, `EAX`, `EBX`, `ESI`, `EDI` or any other register besides `ECX`; or takes one in `ECX` plus stack arguments, ends with plain `ret`, and its callers clean up the stack | a register convention the compiler chose | none; see below |
 
 A function **takes an argument in a register** when it uses the register's
@@ -38,9 +38,14 @@ through the function, not only the first few instructions.
 
 If the function ends by jumping to another function instead of returning (a
 thunk such as a lone `jmp`, or a tail call), follow the jump: the target's
-`ret N` and stack reads count, and so do its register arguments. For
-example, `0x00431170` is a lone `jmp 0x0044ce10`, and the target reads one
-stack word.
+`ret N` and stack reads count, and so do its register arguments, except a
+register the thunk writes before the jump. For example:
+
+- `0x00431170` is a lone `jmp 0x0044ce10`, and the target reads one stack
+  word, so the thunk takes one;
+- `0x00642cd0` is `mov ecx, [0x00ccb9d8]; jmp 0x0066c580`: the target is
+  `thiscall`, but the thunk supplies the object itself, so the thunk takes
+  no arguments (`cdecl`).
 
 The callers only confirm it, and are easy to miscount:
 

@@ -40,8 +40,9 @@ Source: the wiki's [Startup](https://github.com/fahrenheit-crew/fahrenheit/wiki/
   `render_imgui`, state callbacks or event handlers, checks each `hook()`
   result; on a failure it does not rely on returning `false`, which only
   logs a warning and leaves the module loaded. It sets a field that its
-  hooks (still chaining), `render_imgui`, state callbacks and event handlers
-  check
+  hooks (still chaining), `render_imgui` and event handlers check, and its
+  `save_local_state` writes back the state it loaded instead of nothing,
+  which would erase that save's data
   ([`ffx-mod/references/runtime.md`](../../ffx-mod/references/runtime.md#startup-order)).
 - No game function is called from the constructor or from `init`.
 - `init` does not assume another mod's `init` has run, unless that mod is

@@ -10,7 +10,7 @@ say ([how to read the wiki offline](../SKILL.md#getting-help)).
 
 ### X-2 and Last Mission
 
-The wiki's examples target `FFX.exe`. An X-2 function names `FFX-2.exe`:
+The wiki has no `FFX-2.exe` example. An X-2 function names `FFX-2.exe`:
 
 ```cs
 public static FhCallHandle<d_X2Function> X2Function

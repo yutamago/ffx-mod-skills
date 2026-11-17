@@ -1,15 +1,16 @@
 # Troubleshooting
 
-Read the wiki's
-[Compatibility guide](https://github.com/fahrenheit-crew/fahrenheit/wiki/Compatibility-guide)
-first for problems with the game version, running as administrator, Linux,
-and other tools (Special K, RivaTuner, Malwarebytes, older file loaders).
-The [Installation guide](https://github.com/fahrenheit-crew/fahrenheit/wiki/Installation-guide)
-covers prerequisites and launching, and the
-[SDK](https://github.com/fahrenheit-crew/fahrenheit/wiki/SDK) page covers a local SDK that is ignored after a rebuild, and
-the [Build and deployment guide](https://github.com/fahrenheit-crew/fahrenheit/wiki/Build-and-deployment-guide) warns about
-build errors when the folder path has special characters. The symptoms below are not on
-those pages ([how to read the wiki offline](../SKILL.md#getting-help)).
+Read the wiki first:
+
+- [Compatibility guide](https://github.com/fahrenheit-crew/fahrenheit/wiki/Compatibility-guide): the game version, running
+  as administrator, Linux, and other tools (Special K, RivaTuner,
+  Malwarebytes, older file loaders);
+- [Installation guide](https://github.com/fahrenheit-crew/fahrenheit/wiki/Installation-guide): prerequisites and launching;
+- [SDK](https://github.com/fahrenheit-crew/fahrenheit/wiki/SDK): a local SDK that is ignored after a rebuild;
+- [Build and deployment guide](https://github.com/fahrenheit-crew/fahrenheit/wiki/Build-and-deployment-guide): build errors
+  when the folder path has special characters.
+
+The symptoms below are not on those pages ([how to read the wiki offline](../SKILL.md#getting-help)).
 
 ## Build
 
@@ -28,7 +29,10 @@ those pages ([how to read the wiki offline](../SKILL.md#getting-help)).
 | On the main menu, the top-left corner shows `1 mods loaded` and only *Fahrenheit Runtime* | `mods/loadorder` is missing, unreadable or empty. Fahrenheit loads only its own runtime; when the file is missing or unreadable it also writes a warning to the framework log in `logs/<session>/` ([`src/core/bootloader.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/bootloader.cs), `_init_load_order`). |
 | One mod is not listed in the top-left corner of the main menu | Its ID is not in `loadorder`. |
 | A mod is listed but its code never runs | The manifest's `Id` differs from the folder and DLL name, so Fahrenheit looks for a DLL that does not exist; or a module has no `[FhLoad]` or one without the running game (the framework log says `Loader ignored module type …`), or the module class is not public (skipped without a log line). See `load_mod` in [`src/core/bootloader.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/bootloader.cs). |
-| Hook never runs | It was registered after `init` on a function that some mod hooked during `init` (the framework log says `Late insertion rejected`), or a mod later in `loadorder` hooks the same function and does not chain ([calls.md](calls.md#which-hook-runs-first)), or `hook()` returned `false` because the target was not found, which Fahrenheit does not log for an offset in a module that is not loaded; a missing export logs `No export` ([runtime.md](runtime.md#startup-order)), or a queued hook failed to install: Fahrenheit stops there, so every hook of any mod not yet installed stays uninstalled (the framework log shows `MH_CreateHook() failed` or `MH_EnableHook() failed`; `chain_finalize` in [`src/core/handles.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/handles.cs)). |
+| Hook never runs: registered after `init` | The function was hooked by some mod during `init`, so later hooks are rejected; the framework log says `Late insertion rejected`. |
+| Hook never runs: another mod | A mod later in `loadorder` hooks the same function and does not chain ([calls.md](calls.md#which-hook-runs-first)). |
+| Hook never runs: `hook()` returned `false` | The target was not found ([runtime.md](runtime.md#startup-order)). Nothing is logged for an offset in a module that is not loaded; a missing export logs `No export`. |
+| Hook never runs: installation failed | A queued hook failed to install. Fahrenheit stops there, so every hook of any mod not yet installed stays uninstalled. The framework log shows `MH_CreateHook() failed` or `MH_EnableHook() failed` (`chain_finalize` in [`src/core/handles.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/handles.cs)). |
 
 ## Crashes
 

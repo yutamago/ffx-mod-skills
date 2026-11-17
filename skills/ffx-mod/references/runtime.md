@@ -55,8 +55,14 @@ When something in `init` fails:
 1. log why through `_logger`;
 2. set a field that marks the module disabled;
 3. have its hooks check that field (and still chain), and its
-   `render_imgui`, state callbacks and event handlers return early;
-4. return `false`, so the framework log also says the module failed.
+   `render_imgui` and event handlers return early;
+4. keep its local state intact: Fahrenheit empties the slot's state file
+   before it calls `save_local_state`
+   ([`src/core/state.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/state.cs), `state_save_slot`), so a
+   disabled module that writes nothing erases its data for that save. Have
+   `load_local_state` keep the bytes it read and `save_local_state` write
+   them back unchanged;
+5. return `false`, so the framework log also says the module failed.
 
 Do not rely on the return value alone to switch the module off.
 
@@ -79,8 +85,9 @@ the version in use before writing a setting type of your own.
 
 Not on the wiki. Fahrenheit can encode and decode the games' text format at
 runtime, so mods can create or change in-game strings without shipping game
-files. Look for the encoding helpers in `src/core/encoding.cs` of the
-Fahrenheit version in use.
+files. Look for the encoding helpers in
+[`src/core/encoding.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/encoding.cs) of the Fahrenheit
+version in use.
 
 ## User interface
 
