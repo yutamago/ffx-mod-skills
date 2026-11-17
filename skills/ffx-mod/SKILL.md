@@ -117,7 +117,8 @@ The SDK publishes the mod and writes its manifest to
    folder, outside the game folder).
 2. Copy the mod folder into Fahrenheit's `mods/` folder.
 3. Add the mod ID on its own line in `mods/loadorder` (create the file if it is
-   missing; without it Fahrenheit starts but loads no mods).
+   missing; without it Fahrenheit starts but loads no mods:
+   `_init_load_order` in [`src/core/bootloader.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/bootloader.cs)).
 4. Start the game through Fahrenheit: `bin\fhstage0.exe <path to FFX.exe>`
    for FFX, `bin\fhstage0.exe <path to FFX-2.exe>` for X-2, and
    `bin\fhstage0.exe <path to FFX-2.exe> FFX2_LASTMISSION` for Last Mission.

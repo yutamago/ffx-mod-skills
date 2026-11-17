@@ -56,12 +56,13 @@ When something in `init` fails:
 2. set a field that marks the module disabled;
 3. have its hooks check that field (and still chain), and its
    `render_imgui` and event handlers return early;
-4. keep its local state intact: Fahrenheit empties the slot's state file
-   before it calls `save_local_state`
-   ([`src/core/state.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/state.cs), `state_save_slot`), so a
-   disabled module that writes nothing erases its data for that save. Have
-   `load_local_state` keep the bytes it read and `save_local_state` write
-   them back unchanged;
+4. know that its `save_local_state` still runs on every save, on a state
+   file Fahrenheit has already emptied
+   ([`src/core/state.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/state.cs), `state_save_slot`), so
+   whatever it writes, or nothing, replaces that save's data for the
+   module. Fahrenheit has no way for a module to skip this; if it matters
+   for the mod, tell the user it is a gap they can raise on the Discord or
+   as an issue themselves;
 5. return `false`, so the framework log also says the module failed.
 
 Do not rely on the return value alone to switch the module off.
