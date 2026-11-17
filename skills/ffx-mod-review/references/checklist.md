@@ -38,7 +38,8 @@ Source: the wiki's [Startup](https://github.com/fahrenheit-crew/fahrenheit/wiki/
   hooks or subscribes anything; a module that hooks several functions does
   not just return the last `hook` result, because a `false` leaves its
   earlier hooks running. It checks each result and, on a failure, sets a
-  field its hooks and callbacks check
+  field that its hooks check (and still chain) and its callbacks check, and
+  returns `true`
   ([`ffx-mod/references/runtime.md`](../../ffx-mod/references/runtime.md#startup-order)).
 - No game function is called from the constructor or from `init`.
 - `init` does not assume another mod's `init` has run, unless that mod is
@@ -69,7 +70,8 @@ Source: the wiki's [Calls](https://github.com/fahrenheit-crew/fahrenheit/wiki/Ca
   is the image base `0x400000`.
 - Addresses match the game build the SDK version supports
   ([`ffx-mod/references/versions.md`](../../ffx-mod/references/versions.md)). Addresses from
-  the 2019 build do not work with `alpha12` and newer.
+  another game build do not work (wiki:
+  [Compatibility guide](https://github.com/fahrenheit-crew/fahrenheit/wiki/Compatibility-guide)).
 
 ## 4. Which games
 

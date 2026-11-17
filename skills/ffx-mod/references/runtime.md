@@ -43,10 +43,11 @@ and goes on to the next module
 
 So return `false` only when the module cannot work, and before it hooks or
 subscribes anything. During `init`, `hook()` returns `false` only when the
-target cannot be found, for example an `FFX.exe` offset while X-2 runs. If a
-later `hook()` fails after earlier ones succeeded, set a field that marks the
-module disabled and have its hooks check it (and still chain) and its other
-callbacks return early.
+target cannot be found, for example an `FFX.exe` offset while X-2 runs
+(`hook` and `chain_add` in [`src/core/handles.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/handles.cs)).
+If a later `hook()` fails after earlier ones succeeded, set a field that
+marks the module disabled, have its hooks check it (and still chain) and its
+other callbacks return early, and return `true`.
 
 ## State
 
