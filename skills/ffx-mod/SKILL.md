@@ -201,7 +201,7 @@ them the link; do not contact anyone on their behalf.
 - [references/versions.md](references/versions.md): Fahrenheit versions and game builds: what the wiki's Compatibility guide and SDK pages leave out
 - [references/structure.md](references/structure.md): mod ID, project file, manifest, file mods: what the wiki's Mod structure and Manifests pages leave out
 - [references/calls.md](references/calls.md): calling and hooking game functions: what the wiki's Calls page leaves out
-- [references/runtime.md](references/runtime.md): modules, startup order, state, settings: what the wiki's pages on them leave out
+- [references/runtime.md](references/runtime.md): modules, startup order, state, settings: what the wiki's pages on them leave out; game text; user interface
 - [references/converting.md](references/converting.md): moving ASI, proxy-DLL and External File Loader mods to Fahrenheit
 - [references/troubleshooting.md](references/troubleshooting.md): build and launch problems the wiki's guides do not cover
 - [references/review-loop.md](references/review-loop.md): reviewing your own mod with subagents until it is approved

@@ -9,12 +9,22 @@ own prologue and `ret`, and two or three of its callers.
 
 | What you see | Convention | C# |
 |---|---|---|
-| Callee reads no argument register; ends with plain `ret`; callers `add esp, N` after the call | `cdecl` | `CallingConvention.Cdecl` / `CallConvCdecl` |
-| Callee reads no argument register; ends with `ret N` | `stdcall` | `CallingConvention.StdCall` / `CallConvStdcall` |
-| Callee reads `ECX` and no other argument register, usually as an object pointer; ends with `ret N`, or with plain `ret` only when it reads no stack arguments | `thiscall` | `CallingConvention.ThisCall` / `CallConvThiscall`; `ECX` is the first parameter |
-| Callee reads `EDX`, `EAX`, `ESI` or `EDI` as an argument; or reads `ECX` and stack arguments, ends with plain `ret`, and its callers `add esp, N` afterwards | a register convention the compiler chose | none; see below |
+| Callee takes no register argument; ends with plain `ret`; callers `add esp, N` after the call | `cdecl` | `CallingConvention.Cdecl` / `CallConvCdecl` |
+| Callee takes no register argument; ends with `ret N` | `stdcall` | `CallingConvention.StdCall` / `CallConvStdcall` |
+| Callee takes an argument in `ECX` and in no other register, usually an object pointer; ends with `ret N`, or with plain `ret` only when it reads no stack arguments | `thiscall` | `CallingConvention.ThisCall` / `CallConvThiscall`; `ECX` is the first parameter |
+| Callee takes an argument in `EDX`, `EAX`, `ESI` or `EDI`; or takes one in `ECX` plus stack arguments, ends with plain `ret`, and its callers `add esp, N` afterwards | a register convention the compiler chose | none; see below |
 
-"Reads a register" means it uses the register's value before writing it.
+A function **takes an argument in a register** when it uses the register's
+incoming value as data: it copies it (`mov edi, ecx`), compares it
+(`cmp edx, 0x20`) or dereferences it (`[ecx+0x10]`), and its callers set
+that register just before the `call`. These do not count:
+
+- a register pushed in the prologue and popped before `ret` (`push esi`,
+  `push edi`, `push ebx`): the function only preserves it;
+- `push ecx` at the start that only makes room for a local variable; for
+  example Fahrenheit's `Cdecl` entry `graphicVFXCreate` (`FFX.exe+0x244DE0`)
+  starts `push ebp; mov ebp, esp; push ecx; push esi`.
+
 Check the last row first: a function that matches it is not `cdecl`,
 `stdcall` or `thiscall`, even if it also fits one of those rows.
 
@@ -56,10 +66,10 @@ Fahrenheit project) marks these in its comments with wording such as
 - `0x0042e840` takes two arguments in `ECX` and `EDX` and none on the stack,
   the fastcall layout;
 - `0x00401690` takes two in `ECX` and `EDX` and a third on the stack that
-  the caller removes, which no standard convention describes.
-
-- `0x0041e980` takes one argument in `ECX` and two on the stack that the
-  caller removes, so it is not `thiscall` although it reads only `ECX`.
+  the caller removes, which no standard convention describes;
+- `0x0041e980` takes one argument in `ECX` and two 64-bit ones on the stack
+  (four words, `add esp, 0x10` at the caller) that the caller removes, so it
+  is not `thiscall` although its only register argument is `ECX`.
 
 Some of these are in bundled library code (libogg, libwebm, the C++ standard
 library); others are in the PC port's own engine code (scene, renderer,

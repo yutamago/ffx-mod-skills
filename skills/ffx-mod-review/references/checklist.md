@@ -34,8 +34,11 @@ Source: the wiki's [Startup](https://github.com/fahrenheit-crew/fahrenheit/wiki/
 
 - The constructor only sets fields and creates the settings provider and
   module handles. No game calls, no file reading that could fail silently.
-- Every hook is registered in `init`, and `init` returns the result of the
-  hook calls (or `false` when the module cannot work).
+- Every hook is registered in `init`. `init` returns `false` only before it
+  hooks or subscribes anything; a module that hooks several functions does
+  not just return the last `hook` result, because a `false` leaves its
+  earlier hooks running
+  ([`ffx-mod/references/runtime.md`](../../ffx-mod/references/runtime.md#startup-order)).
 - No game function is called from the constructor or from `init`.
 - `init` does not assume another mod's `init` has run, unless that mod is
   earlier in `loadorder` and the README says so.

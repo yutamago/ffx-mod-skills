@@ -1,4 +1,4 @@
-# Modules, startup, state, settings, localization
+# Modules, startup, state, settings, game text, user interface
 
 Read the wiki pages first:
 [Modules](https://github.com/fahrenheit-crew/fahrenheit/wiki/Modules),
@@ -30,10 +30,18 @@ So a module can fetch another module with `FhModuleHandle<T>` in `init`
 regardless of load order, but it can rely on the other module's `init` having
 run only if that mod is listed earlier in `loadorder`.
 
-Not on the wiki: return `false` from `init` only if the module cannot work.
-Fahrenheit logs a warning and carries on with the other modules
-([`src/core/mods.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/mods.cs)). Hooks the module added before
-returning `false` stay installed, so return before hooking anything.
+Not on the wiki: what `false` from `init` does. Fahrenheit logs a warning
+and goes on to the next module
+([`src/core/mods.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/mods.cs)), but the module stays loaded:
+
+- hooks and event subscriptions it added before returning stay active;
+- Fahrenheit still calls its `render_imgui`, `save_local_state` and
+  `load_local_state`;
+- other modules still get it through `FhModuleHandle<T>`.
+
+So return `false` only when the module cannot work, and before it hooks or
+subscribes anything. If it can fail later, keep a field that says so and
+check it in its other callbacks.
 
 ## State
 
