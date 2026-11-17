@@ -1,100 +1,106 @@
-# Modules, startup, state, settings, localization
+# Modules, startup, state, settings, game text, user interface
 
-Wiki pages: [Modules](https://github.com/fahrenheit-crew/fahrenheit/wiki/Modules),
+Read the wiki pages first:
+[Modules](https://github.com/fahrenheit-crew/fahrenheit/wiki/Modules),
 [Startup](https://github.com/fahrenheit-crew/fahrenheit/wiki/Startup),
 [State](https://github.com/fahrenheit-crew/fahrenheit/wiki/State),
 [Settings](https://github.com/fahrenheit-crew/fahrenheit/wiki/Settings),
 [Localization](https://github.com/fahrenheit-crew/fahrenheit/wiki/Localization).
+They give the rules for a module, what is allowed in the constructor, in
+`init` and afterwards, module handles, global and local state, setting
+providers and the `lang` folder. This file holds only what those pages do not
+say ([how to read the wiki offline](../SKILL.md#getting-help)).
 
 ## Modules
 
-A code mod contains one or more modules: public classes deriving from
-`FhModule`. Each module:
-
-- has exactly one public parameterless constructor;
-- overrides `init`;
-- carries `[FhLoad(FhGameId.FFX | FhGameId.FFX2 | FhGameId.FFX2LM)]` (or a
-  subset) naming the games it loads in;
-- gets its own log (`_logger`), global state and local state.
-
-Never construct a module yourself; Fahrenheit does. Split a mod into several
-modules when parts are independent or game-specific.
-
-`init` receives the mod's `FhModContext`: its folders (`Paths`) and its
-manifest (`Manifest`, including the version). Use these and `_logger`
-directly; [builtins.md](builtins.md) lists what else not to rebuild.
+- `init` receives the mod's `FhModContext`: its folders (`Paths`) and its
+  manifest (`Manifest`, including the version). The wiki's examples show the
+  parameter but not what it holds. Use it and `_logger` directly;
+  [builtins.md](builtins.md) lists what else not to rebuild.
 
 ## Startup order
 
+The wiki gives the rules per stage but not the order across mods:
+
 1. Every module of every mod is constructed.
-2. Every module's `init` runs, mod by mod in load order.
-3. Hooks are committed and the game starts.
+2. Every module's `init` runs, mod by mod in load order. Hooks added here are
+   only queued.
+3. All queued hooks are installed (`chain_finalize` in
+   [`src/core/handles.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/handles.cs)), and the game starts.
 
-| Phase | Allowed | Not allowed |
-|---|---|---|
-| Constructor | set fields; create the settings provider | module handles, call handles, `FhApi` |
-| `init` | subscribe to events, hook functions, module handles, `FhApi`, global state | calling game functions |
-| After `init` | calling game functions, module handles, `FhApi` | new hooks on already hooked functions |
+So a module can fetch another module with `FhModuleHandle<T>` in `init`
+regardless of load order, but it can rely on the other module's `init` having
+run only if that mod is listed earlier in `loadorder`.
 
-Return `false` from `init` only if the module cannot work; Fahrenheit logs a
-warning and continues.
+Not on the wiki: what `false` from `init` does. Fahrenheit logs a warning
+and goes on to the next module
+([`src/core/mods.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/mods.cs)), but the module stays loaded:
 
-Because all modules exist before any `init` runs, a module can fetch another
-module with `FhModuleHandle<T>` in `init` regardless of load order. It cannot
-rely on the other module's `init` having run already, unless the other module
-is listed earlier in `loadorder`.
+- hooks and event subscriptions it added before returning stay active;
+- Fahrenheit still calls its `render_imgui`, `save_local_state` and
+  `load_local_state`;
+- other modules still get it through `FhModuleHandle<T>`.
 
-## Talking to other modules
+So the return value only chooses Fahrenheit's log line.
 
-```cs
-private readonly FhModuleHandle<OtherModule> _other;
-public MyModule() { _other = new(this); }
+During `init`, `hook()` returns `false` only when the target cannot be
+found, for example an export missing from a DLL (`hook` and `chain_add` in
+[`src/core/handles.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/handles.cs)). It also happens for
+an `FFX.exe` offset while X-2 runs, but that is a design error to fix with
+`[FhLoad]` or the `(ffx, ffx2)` constructor, not a runtime failure to
+handle.
 
-public override bool init(FhModContext mod_context, FileStream global_state_file) {
-    if (_other.try_get_module(out OtherModule? other)) { /* use it */ }
-    return true;
-}
-```
+When something in `init` fails:
 
-Always handle the module being missing: the user may not have the mod, or the
-module may not load for the current game.
+1. log why through `_logger`;
+2. set a field that marks the module disabled;
+3. have its hooks check that field (and still chain), and its
+   `render_imgui` and event handlers return early;
+4. know that its `save_local_state` still runs on every save, on a state
+   file Fahrenheit has already emptied
+   ([`src/core/state.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/state.cs), `state_save_slot`), so
+   whatever it writes, or nothing, replaces that save's data for the
+   module. Fahrenheit has no way for a module to skip this; if it matters
+   for the mod, tell the user it is a gap they can raise on the Discord or
+   as an issue themselves;
+5. return `false`, so the framework log also says the module failed.
+
+Do not rely on the return value alone to switch the module off.
 
 ## State
 
-Never store mod data in the game's save files or in files of your own choosing.
-
-- **Global state**: `init` receives a `FileStream`. Keep it if you need it;
-  Fahrenheit never closes it. The format is up to the mod.
-- **Local state** (per save game): override `save_local_state` and
-  `load_local_state`. Both must catch their own exceptions and must not keep
-  the stream. `load_local_state` receives the version of the mod that wrote
-  the file; use it to migrate or reject old data.
-
 Set `SEPARATE_SAVES` in `FhManifestFlags` when the mod changes the game so
-much that its saves should not mix with vanilla saves.
+much that its saves should not mix with vanilla saves. The wiki's State and
+Manifests pages do not describe the flag
+([`FhManifestFlags`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/module.cs)).
+
+Also not on the wiki: `load_local_state` is not called when the loaded save
+has no state file for the module
+([`src/core/state.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/state.cs), `state_load_slot`). Fields
+filled from the previously loaded save then remain, and the next save writes
+them into the new one. `PostLoadGame` is raised on every load, but after the
+state callbacks
+([`src/runtime/save_impl.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/runtime/save_impl.cs)), so a reset
+there must apply only when `load_local_state` did not run for that load: set
+a flag in `load_local_state`, and check and clear it in `PostLoadGame`.
 
 ## Settings
 
-Create one class deriving from `FhSettingProvider<YourModule>`, instantiate it
-in the module's constructor, and return the settings in display order from
-`get()`. Built-in setting types include `FhSettingToggle` (bool) and
-`FhSettingNumber<T>`. Players change them in the mod configuration panel
-(F7).
-
-## Localization
-
-Put strings in `lang/<Full.Type.Name.Of.Module>/<locale>.json`, for example
-`lang/Author.Mod.MyModule/en-US.json`, and look them up with
-`FhApi.Localization.localize("string_id", this)`. The folder name must match
-the module's full type name exactly.
+The wiki page lists `FhSettingToggle` and `FhSettingNumber<T>`. Current
+versions also have `FhSettingText`, `FhSettingsCategory` (a group of
+settings) and `FhSettingReference<T>`
+([`src/core/settings.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/settings.cs)); check that file of
+the version in use before writing a setting type of your own.
 
 ## Game text
 
-Fahrenheit can encode and decode the games' text format at runtime, so mods
-can create or change in-game strings without shipping game files. Look for the
-encoding helpers in `src/core/encoding.cs` of the Fahrenheit version in use.
+Not on the wiki. Fahrenheit can encode and decode the games' text format at
+runtime, so mods can create or change in-game strings without shipping game
+files. Look for the encoding helpers in
+[`src/core/encoding.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/encoding.cs) of the Fahrenheit
+version in use.
 
 ## User interface
 
-Fahrenheit bundles ImGui for custom interfaces and can load game textures for
-use in them, so mods need not ship copyrighted images.
+Not on the wiki. Fahrenheit bundles ImGui for custom interfaces and can load
+game textures for use in them, so mods need not ship copyrighted images.

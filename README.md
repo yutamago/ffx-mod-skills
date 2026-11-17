@@ -30,12 +30,12 @@ One plugin, `ffx-mod-skills`, with these skills:
 skills/ffx-mod/
   SKILL.md                    when to use Fahrenheit, rules, workflow
   references/builtins.md      what Fahrenheit already provides, so mods don't rebuild it
-  references/versions.md      Fahrenheit versions and the game builds they support
-  references/structure.md     mod ID, project file, manifest, folders, file mods
-  references/calls.md         calling and hooking game functions
-  references/runtime.md       modules, startup order, state, settings, localization
+  references/versions.md      choosing and upgrading a Fahrenheit version (beyond the wiki)
+  references/structure.md     mod ID, project file, manifest, file mods (beyond the wiki)
+  references/calls.md         calling and hooking game functions (beyond the wiki)
+  references/runtime.md       modules, startup, state, settings, game text, UI (beyond the wiki)
   references/converting.md    moving ASI, proxy-DLL and EFL mods to Fahrenheit
-  references/troubleshooting.md
+  references/troubleshooting.md  build and launch problems (beyond the wiki)
   references/review-loop.md   reviewing your own mod with fresh subagents until approved
 skills/ffx-mod-review/
   SKILL.md                    how to review and report
@@ -103,7 +103,8 @@ instruction file (`AGENTS.md`, `.cursorrules`, …) can be pointed at
 Corrections are welcome. Every statement should be checkable against the
 Fahrenheit wiki or source, or for game internals against another public
 source (ffx-rust, Atel#, FFXDataParser); link the page it comes from, and
-write it in your own words.
+write it in your own words. Do not restate what a Fahrenheit wiki page
+already says: link the page and add only what it lacks.
 
 Before a pull request, run `python3 tools/check.py`. It checks that every
 manifest has the same name, version and description, that each skill's

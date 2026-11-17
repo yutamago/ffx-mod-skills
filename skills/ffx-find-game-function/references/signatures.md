@@ -9,19 +9,69 @@ own prologue and `ret`, and two or three of its callers.
 
 | What you see | Convention | C# |
 |---|---|---|
-| Callee ends with plain `ret`; callers `add esp, N` after the call | `cdecl` | `CallingConvention.Cdecl` / `CallConvCdecl` |
-| Callee ends with `ret N`; nothing in `ECX` that the callee reads first | `stdcall` | `CallingConvention.StdCall` / `CallConvStdcall` |
-| Callee reads `ECX` before writing it (usually as an object pointer), ends with `ret N` or `ret` | `thiscall` | `CallingConvention.ThisCall` / `CallConvThiscall`; `ECX` is the first parameter |
-| Callee reads both `ECX` and `EDX` before writing them | `fastcall` or a custom convention | see below |
+| Callee takes no register argument; ends with plain `ret`; callers clean up with `add esp, N`, or `pop ecx` for one word, somewhere after the call (no arguments: nothing to clean up) | `cdecl` | `CallingConvention.Cdecl` / `CallConvCdecl` |
+| Callee takes no register argument; ends with `ret N` | `stdcall` | `CallingConvention.StdCall` / `CallConvStdcall` |
+| Callee takes an argument in `ECX` and in no other register, usually an object pointer; ends with `ret N`, or with plain `ret` only when it reads no stack arguments (for a thunk or tail call, judge by the target, minus registers the thunk sets) | `thiscall` | `CallingConvention.ThisCall` / `CallConvThiscall`; `ECX` is the first parameter |
+| Callee takes an argument in `EDX`, `EAX`, `EBX`, `ESI`, `EDI` or any other register besides `ECX`; or takes one in `ECX` plus stack arguments, ends with plain `ret`, and its callers clean up the stack | a register convention the compiler chose | none; see below |
 
-`ret N` means the callee removes N bytes of arguments: N / 4 stack words.
-With `cdecl`, count the words from the callers' `push`es or from the size of
-their `add esp, N`, and check which `[esp+…]` / `[ebp+8+…]` slots the callee
-reads.
+A function **takes an argument in a register** when it uses the register's
+incoming value as data: it copies it (`mov edi, ecx`), compares it
+(`cmp edx, 0x20`) or dereferences it (`[ecx+0x10]`), and its callers set
+that register just before the `call`. These do not count:
+
+- a register pushed in the prologue and popped before `ret` (`push esi`,
+  `push edi`, `push ebx`): the function only preserves it;
+- `push ecx` at the start that only makes room for a local variable; for
+  example Fahrenheit's `Cdecl` entry `graphicVFXCreate` (offset `0x244DE0`,
+  absolute `0x00644de0`) starts `push ebp; mov ebp, esp; push ecx; push esi`.
+
+Check the last row first: a function that matches it is not `cdecl`,
+`stdcall` or `thiscall`, even if it also fits one of those rows.
+
+### How many stack words
+
+The callee decides. `ret N` means it removes N bytes: N / 4 stack words.
+Otherwise, find the highest stack slot it reads: `[ebp+0x8]` is the first
+word after `push ebp; mov ebp, esp`, `[ebp+0xc]` the second, and so on
+(without that frame, `[esp+4]` at entry is the first). Check every path
+through the function, not only the first few instructions.
+
+If the function ends by jumping to another function instead of returning (a
+thunk such as a lone `jmp`, or a tail call), follow the jump: the target's
+`ret N` and stack reads count, and so do its register arguments, except a
+register the thunk writes before the jump. For example (absolute addresses
+in the `FFX.exe` named under "Conventions a delegate cannot express"):
+
+- `0x00431170` is a lone `jmp 0x0044ce10`, and the target reads one stack
+  word, so the thunk takes one;
+- `0x00642cd0` is `mov ecx, [0x00ccb9d8]; jmp 0x0066c580`: the target is
+  `thiscall`, but the thunk supplies the object itself, so the thunk takes
+  no arguments (`cdecl`).
+
+The callers only confirm it, and are easy to miscount:
+
+- MSVC often merges the cleanup of several calls into one later
+  `add esp, N`, or puts it behind a jump, so the size of `add esp` is not
+  the argument count.
+- `pop ecx` right after a call removes one word; it is cleanup, not an
+  argument.
+- A caller may push `f`'s later arguments (`x`), then `g`'s argument (`y`),
+  call `g` to compute `f`'s first argument, and push its result: `push x; push y; call g; add esp, 4;
+  push eax; call f` gives `f` two words, not one.
+- `sub esp, 8` followed by `fstp qword ptr [esp]` passes a `double`.
+
+If the callers and the callee (or the function it jumps to) disagree, the
+callee's reads win.
 
 Fahrenheit's own hand-checked `FhCall` entries use only `Cdecl`, `StdCall`
-and `ThisCall` in both games (see `src/core/call.cs`, `src/core/ffx/call.cs` and
-`src/core/ffx2/call.cs`).
+and `ThisCall` in both games (see
+[`src/core/call.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/call.cs),
+[`src/core/ffx/call.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/ffx/call.cs) and
+[`src/core/ffx2/call.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/ffx2/call.cs)). Its generated call
+files have one `FastCall` delegate, shared by both games:
+`FUN_0054923A_0047D890` in
+[`src/core/call_1.g.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/call_1.g.cs), which is
+`__security_check_cookie`, a compiler helper, not a function to hook.
 
 ## Arguments and return value
 
@@ -37,18 +87,41 @@ and `ThisCall` in both games (see `src/core/call.cs`, `src/core/ffx/call.cs` and
 
 ## Conventions a delegate cannot express
 
-Whole-program optimisation lets MSVC give internal functions custom
-conventions: arguments in `EAX`, `ESI` or `EDI`, `fastcall` where the caller
-pops, and so on. ffx-rust's `symbols/ffx.sym` comments call these out (for
-example `fastcall-caller-pops`, `ecx = … (no stack words)`).
+Fahrenheit's function lists
+([`src/step/data`](https://github.com/fahrenheit-crew/fahrenheit/tree/main/src/step/data))
+record a calling convention for only 155 of 56,260 functions in FFX and 163
+of 59,141 in X-2; the rest are `unknown`. Among the recorded ones, the only `__fastcall`
+is the compiler helper `__security_check_cookie`.
 
-.NET documents `CallingConvention.FastCall` as unsupported
-([CallingConvention](https://learn.microsoft.com/dotnet/api/system.runtime.interopservices.callingconvention)),
-and none of these custom conventions can be written as a delegate. Then:
+MSVC's whole-program optimisation still passes the arguments of some
+internal functions in registers. ffx-rust's `symbols/ffx.sym` (not a
+Fahrenheit project) marks these in its comments with wording such as
+`fastcall(a, b)` or `fastcall-caller-pops`. In the `FFX.exe` with SHA-256
+`0537b2a1…686d` (the build ffx.sym's header names):
+
+- `0x0042e840` takes two arguments in `ECX` and `EDX` and none on the stack,
+  the fastcall layout;
+- `0x00401690` takes two in `ECX` and `EDX` and a third on the stack that
+  the caller removes, which no standard convention describes;
+- `0x0041e980` takes one argument in `ECX` and two 64-bit ones on the stack
+  (four words, `add esp, 0x10` at the caller) that the caller removes, so it
+  is not `thiscall` although its only register argument is `ECX`.
+
+Some of these are in bundled library code (libogg, libwebm, the C++ standard
+library); others are in the PC port's own engine code (scene, renderer,
+settings). A comment that names a single argument in `ECX` and no stack
+arguments that the caller removes describes what a `ThisCall` delegate
+already expresses.
+
+No delegate can express an argument in `EDX` or another register (.NET does
+not support `CallingConvention.FastCall`:
+[CallingConvention](https://learn.microsoft.com/dotnet/api/system.runtime.interopservices.callingconvention)).
+Then:
 
 1. Hook a caller or callee with a standard convention that sees the same
    data; or
-2. ask on the Fahrenheit Discord whether there is a supported way.
+2. tell the user they can ask on the Fahrenheit Discord whether there is a
+   supported way, or raise an issue themselves, in their own words.
 
 Do not hook such a function with a guessed delegate. It will corrupt
 registers or the stack and crash later.

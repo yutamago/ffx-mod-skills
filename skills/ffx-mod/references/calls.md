@@ -1,111 +1,70 @@
 # Calling and hooking game functions
 
-Wiki page: [Calls](https://github.com/fahrenheit-crew/fahrenheit/wiki/Calls).
+Read the wiki's [Calls](https://github.com/fahrenheit-crew/fahrenheit/wiki/Calls)
+page first. It explains call handles (`FhCallHandle<T>`), signatures and
+locations, the `FhCall` library, calling through `fnptr`, hooking in `init`
+and chaining with `chain_from`. This file holds only what that page does not
+say ([how to read the wiki offline](../SKILL.md#getting-help)).
 
-## The pieces
+## Not on the wiki page
 
-A call handle, `FhCallHandle<TDelegate>`, needs two things:
+### X-2 and Last Mission
 
-- **Signature**: a delegate type giving calling convention, return type and
-  arguments.
-- **Location**: an `FhCallLocation`.
-
-```cs
-[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-public delegate int d_SomeFunction(int a, nint b);
-
-public static FhCallHandle<d_SomeFunction> SomeFunction
-    => new(new FhCallLocation("FFX.exe", 0x123450));   // offset in the module
-```
-
-An X-2 function names `FFX-2.exe` instead; a function both games share takes
-both offsets:
+The wiki has no `FFX-2.exe` example. An X-2 function names `FFX-2.exe`:
 
 ```cs
 public static FhCallHandle<d_X2Function> X2Function
     => new(new FhCallLocation("FFX-2.exe", 0x134BD0));
-
-public static FhCallHandle<d_Shared> Shared
-    => new(new FhCallLocation(0x48E750, 0x34C250));   // (FFX offset, FFX-2 offset)
 ```
 
-The two offsets of a shared function usually differ; look up each one. X-2 and Last Mission run the same `FFX-2.exe`, so their offsets are the
-same.
+X-2 and Last Mission run the same `FFX-2.exe`, so their offsets are the same.
+A function both games share usually has a different offset in each; look up both for
+the `(nint ffx, nint ffx2)` constructor.
 
-`FhCallLocation` forms:
+### A function without a signature
 
-| Constructor | Targets |
-|---|---|
-| `(nint ffx, nint ffx2)` | the same function in both games, by offset |
-| `(string module, nint offset)` | a function at an offset in a module |
-| `(string module, string export)` | an exported function |
-| `(nint address)` | an absolute address, for example a vtable slot |
+The wiki says a `d_UnknownFn` handle will likely not work and to raise an
+issue or contact the team. For an agent that means:
 
-## The call library
+- confirm the signature yourself in a disassembler and declare your own
+  handle in the mod (the `ffx-find-game-function` skill has the method), or
+- tell the user they can ask the Fahrenheit developers on the Discord, or
+  raise an issue themselves, in their own words. Never raise it for them
+  ([why](../SKILL.md#working-on-fahrenheit-itself)).
 
-`FhCall` already has a handle for every function in both games:
+Prefer an existing `FhCall` entry over your own declaration when it has a
+real signature, so there is one declaration to keep right.
 
-| Namespace | Functions |
-|---|---|
-| `Fahrenheit.FhCall` | identical in both games |
-| `Fahrenheit.FFX.FhCall` | FFX only |
-| `Fahrenheit.FFX2.FhCall` | X-2 and Last Mission only |
+### Replacing a function
 
-Only reversed functions have real signatures. A handle whose delegate is
-`d_UnknownFn` has no known signature; calling or hooking it will almost
-certainly crash. Then either:
+The wiki allows a hook to return without chaining. Do that only when the mod
+is meant to replace the function, and say so in the code and the README: it
+also switches off the original and every hook that would run after it.
 
-- confirm the signature yourself in a disassembler and declare your own handle
-  in the mod (as above), or
-- ask the Fahrenheit developers on Discord to reverse it.
+### Which hook runs first
 
-Prefer an existing `FhCall` entry over your own declaration when it has a real
-signature.
+The wiki says hooks added in `init` execute in load order. In the source,
+the mod listed **last** in `loadorder` runs first: its hook is called, it
+chains to the hook of the mod listed before it, and so on down to the
+original. `chain_add` pushes each hook onto a stack and `chain_finalize`
+installs them newest first, and the first hook installed is the first to run
+([`src/core/handles.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/handles.cs), the comment above
+`chain_insert`). So a mod later in `loadorder` that does not chain hides the
+hooks of mods earlier in it.
 
-## Calling
+### Calling conventions in these games
 
-```cs
-int r = FhCall.SomeFunction.fnptr!(1, ptr);   // crash if not found
-FhCall.SomeFunction.fnptr?.Invoke(1, ptr);    // call only if found
-```
+The wiki shows where the convention goes but not how to find it. The games
+are 32-bit x86. Fahrenheit's hand-checked `FhCall` entries use `cdecl`,
+`stdcall` and `thiscall` (object pointer in `ECX`), and a delegate can
+express all three. Its function lists
+([`src/step/data`](https://github.com/fahrenheit-crew/fahrenheit/tree/main/src/step/data))
+record a convention for only 155 functions in FFX and 163 in X-2; most entries say
+`unknown`, so work it out from the machine code.
 
-`fnptr` is null when the module is not loaded or the export does not exist.
-Call game functions only after `init` has returned.
-
-## Hooking
-
-Hook in the module's `init` and return the result:
-
-```cs
-public override bool init(FhModContext mod_context, FileStream global_state_file) {
-    return FhCall.SomeFunction.hook(this, h_some_function);
-}
-
-[UnmanagedCallConv(CallConvs = [ typeof(CallConvCdecl) ])]
-private int h_some_function(int a, nint b) {
-    // before
-    int r = FhCall.SomeFunction.chain_from(h_some_function).fnptr!(a, b);
-    // after
-    return r;
-}
-```
-
-- The hook's `[UnmanagedCallConv]` must match the delegate's calling
-  convention, and its parameters and return type must match exactly.
-- Call `chain_from(this_hook)` to run the next hook or the original. Skip it
-  only when the mod deliberately replaces the function, and say so: it also
-  disables every later mod's hook on that function.
-- Hooks registered during `init` run in load order.
-- A function that nobody hooked during `init` may be hooked later; such late
-  hooks run in the order they were added.
-
-## Calling conventions in these games
-
-The games are 32-bit x86. Expect `cdecl`, `stdcall`, `thiscall` (object
-pointer in ECX) and `fastcall`. Compiler-generated functions sometimes pass
-values in other registers, which a delegate cannot express; .NET does not
-support `fastcall` delegates either. If a function's convention is unclear,
-look at how its callers set up the stack and registers, and at its `ret`
-instruction (`ret N` means the callee pops N bytes). The
+If a function's convention is unclear, look at how its callers set up the
+stack and registers, and at its `ret` instruction (`ret N` means the function
+removes N bytes of arguments). A few internal functions take arguments in
+other registers, which no delegate can express: do not guess one. The
 `ffx-find-game-function` skill has the full method
 ([`ffx-find-game-function/references/signatures.md`](../../ffx-find-game-function/references/signatures.md)).

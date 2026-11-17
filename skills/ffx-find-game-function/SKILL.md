@@ -12,7 +12,8 @@ is confirmed and a test hook has run in the game.
 
 The mod itself follows the `ffx-mod` skill
 ([`ffx-mod/SKILL.md`](../ffx-mod/SKILL.md)); hooking and calling
-are in its [`ffx-mod/references/calls.md`](../ffx-mod/references/calls.md).
+are on the Fahrenheit wiki's [Calls](https://github.com/fahrenheit-crew/fahrenheit/wiki/Calls) page, with what the page
+leaves out in [`ffx-mod/references/calls.md`](../ffx-mod/references/calls.md).
 
 ## Steps
 

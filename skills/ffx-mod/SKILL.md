@@ -74,7 +74,7 @@ per-game modules or per-game values ([references/calls.md](references/calls.md),
   user installs Fahrenheit once and every mod builds on that same copy.
 - Never write to the game folder, `FFX.exe`, `FFX-2.exe`, the `.vbf` archives or the
   player's save files. Replace files through `efl`; keep mod data in global or
-  local state ([references/runtime.md](references/runtime.md)).
+  local state (wiki: [State](https://github.com/fahrenheit-crew/fahrenheit/wiki/State)).
 - Never ship copyrighted game assets that Fahrenheit can load from the game at
   runtime.
 - Hook and call game functions only through `FhCallHandle<T>`
@@ -96,7 +96,8 @@ open issues or pull requests. Follow it:
 
 - Never open an issue or pull request on any `fahrenheit-crew` repository.
 - If a mod needs something Fahrenheit lacks (a function signature, an API, a
-  fix), tell the user to ask on the Discord in their own words.
+  fix), tell the user they can ask on the Discord or raise an issue
+  themselves, in their own words.
 - When reading or building Fahrenheit's source, follow the `AGENTS.md` in that
   repository.
 
@@ -116,13 +117,16 @@ The SDK publishes the mod and writes its manifest to
    folder, outside the game folder).
 2. Copy the mod folder into Fahrenheit's `mods/` folder.
 3. Add the mod ID on its own line in `mods/loadorder` (create the file if it is
-   missing; Fahrenheit will not start without it).
+   missing; without it Fahrenheit starts but loads no mods:
+   `_init_load_order` in [`src/core/bootloader.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/bootloader.cs)).
 4. Start the game through Fahrenheit: `bin\fhstage0.exe <path to FFX.exe>`
    for FFX, `bin\fhstage0.exe <path to FFX-2.exe>` for X-2, and
    `bin\fhstage0.exe <path to FFX-2.exe> FFX2_LASTMISSION` for Last Mission.
    Test every game the mod's modules load in.
    On Linux, run the same through Proton.
-5. Loaded mods are listed in the top-left corner of the screen. Logs are under
+5. Loaded mods are listed in the top-left corner of the main menu (not in
+   game, and not while the save screen is open:
+   [`src/runtime/gui/modlist.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/runtime/gui/modlist.cs)). Logs are under
    `logs/<session>/`, crash dumps under `crash/`.
 
 Details and common failures: [references/troubleshooting.md](references/troubleshooting.md).
@@ -182,7 +186,11 @@ model that did the research and the evidence for each finding (see
 
 ## Getting help
 
-- Fahrenheit wiki: https://github.com/fahrenheit-crew/fahrenheit/wiki
+- Fahrenheit wiki: https://github.com/fahrenheit-crew/fahrenheit/wiki.
+  The references name the wiki page to read for each subject and add only
+  what the page lacks. If you can run git but cannot fetch web pages, clone
+  `https://github.com/fahrenheit-crew/fahrenheit.wiki.git`: each page is one
+  Markdown file.
 - Discord, Cid's Salvage Ship: https://discord.gg/AGx2grw9nD
 
 When the user should ask the Fahrenheit developers something, say so and give
@@ -191,12 +199,12 @@ them the link; do not contact anyone on their behalf.
 ## References
 
 - [references/builtins.md](references/builtins.md): what Fahrenheit already provides, so mods don't rebuild it
-- [references/versions.md](references/versions.md): Fahrenheit versions and game builds
-- [references/structure.md](references/structure.md): mod ID, project file, manifest, folders, file mods
-- [references/calls.md](references/calls.md): calling and hooking game functions
-- [references/runtime.md](references/runtime.md): modules, startup order, state, settings, localization
+- [references/versions.md](references/versions.md): Fahrenheit versions and game builds: what the wiki's Compatibility guide and SDK pages leave out
+- [references/structure.md](references/structure.md): mod ID, project file, manifest, file mods: what the wiki's Mod structure and Manifests pages leave out
+- [references/calls.md](references/calls.md): calling and hooking game functions: what the wiki's Calls page leaves out
+- [references/runtime.md](references/runtime.md): modules, startup order, state, settings: what the wiki's pages on them leave out; game text; user interface
 - [references/converting.md](references/converting.md): moving ASI, proxy-DLL and External File Loader mods to Fahrenheit
-- [references/troubleshooting.md](references/troubleshooting.md): build and launch problems
+- [references/troubleshooting.md](references/troubleshooting.md): build and launch problems the wiki's guides do not cover
 - [references/review-loop.md](references/review-loop.md): reviewing your own mod with subagents until it is approved
 
 ## Other skills of this plugin
