@@ -30,9 +30,10 @@ So a module can fetch another module with `FhModuleHandle<T>` in `init`
 regardless of load order, but it can rely on the other module's `init` having
 run only if that mod is listed earlier in `loadorder`.
 
-Return `false` from `init` only if the module cannot work. Fahrenheit logs a
-warning and carries on with the other modules
-([`src/core/mods.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/mods.cs)).
+Not on the wiki: return `false` from `init` only if the module cannot work.
+Fahrenheit logs a warning and carries on with the other modules
+([`src/core/mods.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/mods.cs)). Hooks the module added before
+returning `false` stay installed, so return before hooking anything.
 
 ## State
 

@@ -123,7 +123,9 @@ The SDK publishes the mod and writes its manifest to
    `bin\fhstage0.exe <path to FFX-2.exe> FFX2_LASTMISSION` for Last Mission.
    Test every game the mod's modules load in.
    On Linux, run the same through Proton.
-5. Loaded mods are listed in the top-left corner of the screen. Logs are under
+5. Loaded mods are listed in the top-left corner of the main menu (not in
+   game, and not while the save screen is open:
+   [`src/runtime/gui/modlist.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/runtime/gui/modlist.cs)). Logs are under
    `logs/<session>/`, crash dumps under `crash/`.
 
 Details and common failures: [references/troubleshooting.md](references/troubleshooting.md).
@@ -196,12 +198,12 @@ them the link; do not contact anyone on their behalf.
 ## References
 
 - [references/builtins.md](references/builtins.md): what Fahrenheit already provides, so mods don't rebuild it
-- [references/versions.md](references/versions.md): Fahrenheit versions and game builds
-- [references/structure.md](references/structure.md): mod ID, project file, manifest, folders, file mods
+- [references/versions.md](references/versions.md): Fahrenheit versions and game builds: what the wiki's Compatibility guide and SDK pages leave out
+- [references/structure.md](references/structure.md): mod ID, project file, manifest, file mods: what the wiki's Mod structure and Manifests pages leave out
 - [references/calls.md](references/calls.md): calling and hooking game functions: what the wiki's Calls page leaves out
-- [references/runtime.md](references/runtime.md): modules, startup order, state, settings, localization
+- [references/runtime.md](references/runtime.md): modules, startup order, state, settings: what the wiki's pages on them leave out
 - [references/converting.md](references/converting.md): moving ASI, proxy-DLL and External File Loader mods to Fahrenheit
-- [references/troubleshooting.md](references/troubleshooting.md): build and launch problems
+- [references/troubleshooting.md](references/troubleshooting.md): build and launch problems the wiki's guides do not cover
 - [references/review-loop.md](references/review-loop.md): reviewing your own mod with subagents until it is approved
 
 ## Other skills of this plugin

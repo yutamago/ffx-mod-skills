@@ -9,13 +9,14 @@ own prologue and `ret`, and two or three of its callers.
 
 | What you see | Convention | C# |
 |---|---|---|
-| Callee ends with plain `ret`; callers `add esp, N` after the call | `cdecl` | `CallingConvention.Cdecl` / `CallConvCdecl` |
-| Callee ends with `ret N`; nothing in `ECX` that the callee reads first | `stdcall` | `CallingConvention.StdCall` / `CallConvStdcall` |
-| Callee reads `ECX` and no other register (except as below) before writing it, usually as an object pointer; ends with `ret N` or `ret` | `thiscall` | `CallingConvention.ThisCall` / `CallConvThiscall`; `ECX` is the first parameter |
-| Callee reads `EDX`, `EAX`, `ESI` or `EDI` as an argument before writing it, with or without `ECX` | a register convention the compiler chose | none; see below |
+| Callee reads no argument register; ends with plain `ret`; callers `add esp, N` after the call | `cdecl` | `CallingConvention.Cdecl` / `CallConvCdecl` |
+| Callee reads no argument register; ends with `ret N` | `stdcall` | `CallingConvention.StdCall` / `CallConvStdcall` |
+| Callee reads `ECX` and no other argument register, usually as an object pointer; ends with `ret N`, or with plain `ret` only when it reads no stack arguments | `thiscall` | `CallingConvention.ThisCall` / `CallConvThiscall`; `ECX` is the first parameter |
+| Callee reads `EDX`, `EAX`, `ESI` or `EDI` as an argument; or reads `ECX` and stack arguments, ends with plain `ret`, and its callers `add esp, N` afterwards | a register convention the compiler chose | none; see below |
 
-Check the last row before the `thiscall` row: a function that reads `ECX`
-and `EDX` is not `thiscall`.
+"Reads a register" means it uses the register's value before writing it.
+Check the last row first: a function that matches it is not `cdecl`,
+`stdcall` or `thiscall`, even if it also fits one of those rows.
 
 `ret N` means the callee removes N bytes of arguments: N / 4 stack words.
 With `cdecl`, count the words from the callers' `push`es or from the size of
@@ -42,8 +43,8 @@ and `ThisCall` in both games (see `src/core/call.cs`, `src/core/ffx/call.cs` and
 
 Fahrenheit's function lists
 ([`src/step/data`](https://github.com/fahrenheit-crew/fahrenheit/tree/main/src/step/data))
-record a calling convention for only about 160 of some 56,000 functions per
-game; the rest are `unknown`. Among the recorded ones, the only `__fastcall`
+record a calling convention for only 155 of 56,260 functions in FFX and 163
+of 59,141 in X-2; the rest are `unknown`. Among the recorded ones, the only `__fastcall`
 is the compiler helper `__security_check_cookie`.
 
 MSVC's whole-program optimisation still passes the arguments of some
@@ -57,8 +58,14 @@ Fahrenheit project) marks these in its comments with wording such as
 - `0x00401690` takes two in `ECX` and `EDX` and a third on the stack that
   the caller removes, which no standard convention describes.
 
-Most of these are in bundled library code. A comment that names a single
-argument in `ECX` describes what a `ThisCall` delegate already expresses.
+- `0x0041e980` takes one argument in `ECX` and two on the stack that the
+  caller removes, so it is not `thiscall` although it reads only `ECX`.
+
+Some of these are in bundled library code (libogg, libwebm, the C++ standard
+library); others are in the PC port's own engine code (scene, renderer,
+settings). A comment that names a single argument in `ECX` and no stack
+arguments that the caller removes describes what a `ThisCall` delegate
+already expresses.
 
 No delegate can express an argument in `EDX` or another register (.NET does
 not support `CallingConvention.FastCall`:

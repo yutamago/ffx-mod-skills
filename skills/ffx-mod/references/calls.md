@@ -18,7 +18,7 @@ public static FhCallHandle<d_X2Function> X2Function
 ```
 
 X-2 and Last Mission run the same `FFX-2.exe`, so their offsets are the same.
-A function both games share has a different offset in each; look up both for
+A function both games share usually has a different offset in each; look up both for
 the `(nint ffx, nint ffx2)` constructor.
 
 ### A function without a signature
@@ -39,7 +39,18 @@ real signature, so there is one declaration to keep right.
 
 The wiki allows a hook to return without chaining. Do that only when the mod
 is meant to replace the function, and say so in the code and the README: it
-also switches off every later mod's hook on that function.
+also switches off the original and every hook that would run after it.
+
+### Which hook runs first
+
+The wiki says hooks added in `init` execute in load order. In the source,
+the mod listed **last** in `loadorder` runs first: its hook is called, it
+chains to the hook of the mod listed before it, and so on down to the
+original. `chain_add` pushes each hook onto a stack and `chain_finalize`
+installs them newest first, and the first hook installed is the first to run
+([`src/core/handles.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/handles.cs), the comment above
+`chain_insert`). So a mod later in `loadorder` that does not chain hides the
+hooks of mods earlier in it.
 
 ### Calling conventions in these games
 
@@ -48,7 +59,7 @@ are 32-bit x86. Fahrenheit's hand-checked `FhCall` entries use `cdecl`,
 `stdcall` and `thiscall` (object pointer in `ECX`), and a delegate can
 express all three. Its function lists
 ([`src/step/data`](https://github.com/fahrenheit-crew/fahrenheit/tree/main/src/step/data))
-record a convention for only about 160 functions per game; most entries say
+record a convention for only about 160 functions per game (155 in FFX, 163 in X-2); most entries say
 `unknown`, so work it out from the machine code.
 
 If a function's convention is unclear, look at how its callers set up the

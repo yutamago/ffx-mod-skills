@@ -53,7 +53,8 @@ Source: the wiki's [Calls](https://github.com/fahrenheit-crew/fahrenheit/wiki/Ca
   as unconfirmed.
 - No hook or call on a handle whose delegate is `d_UnknownFn`.
 - No delegate guessed for a function that takes arguments in `EDX` or
-  another register besides `ECX`
+  another register besides `ECX`, or that takes `ECX` and stack arguments
+  the caller removes
   ([`ffx-find-game-function/references/signatures.md`](../../ffx-find-game-function/references/signatures.md#conventions-a-delegate-cannot-express)).
 - Each hook calls `chain_from(this_hook)` unless it replaces the function on
   purpose, and the code or README says so.

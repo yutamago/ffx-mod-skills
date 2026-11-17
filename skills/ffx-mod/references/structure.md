@@ -43,10 +43,13 @@ of properties:
 
 - Never edit the manifest the SDK generates for a code mod.
 - `Dependencies` lists the mod IDs this mod needs. The wiki does not describe
-  the field. Load order does not have to follow dependencies for DLLs to
-  resolve; the field is meant for the mod manager in progress
-  ([`src/modmgr`](https://github.com/fahrenheit-crew/fahrenheit/tree/main/src/modmgr)), and the SDK
-  currently writes it as empty.
+  the field. Fahrenheit declares it
+  ([`src/core/module.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/module.cs), `FhManifest`) but does
+  not act on it, and the SDK writes it as empty
+  ([`Sdk.targets`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/sdk/Sdk/Sdk.targets)). Load order does not have
+  to follow dependencies for DLLs to resolve: every mod's DLL is prepared
+  before any mod loads (`FhLoader.prepare` in
+  [`src/core/bootloader.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/bootloader.cs)).
 
 ## File mods (`efl`)
 
