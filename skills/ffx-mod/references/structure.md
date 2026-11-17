@@ -1,92 +1,55 @@
 # Mod structure
 
+Read the wiki pages first:
+[Mod structure](https://github.com/fahrenheit-crew/fahrenheit/wiki/Mod-structure),
+[Manifests](https://github.com/fahrenheit-crew/fahrenheit/wiki/Manifests) and
+[Install structure](https://github.com/fahrenheit-crew/fahrenheit/wiki/Install-structure).
+They give the rules for a mod ID, the files and subfolders of a mod folder,
+the manifest format, which project property becomes which manifest field,
+and the layout of a Fahrenheit installation. This file holds only what those
+pages do not say ([how to read the wiki offline](../SKILL.md#getting-help)).
+
 ## Mod ID
 
-The mod ID is the project's `AssemblyName`. It names the DLL, the manifest,
-the mod's folder, its line in `loadorder` and its saved state.
-
-- It must be unique across all mods and must never change after release.
-- It must be a valid file name: no spaces and no characters that are invalid
-  in a Windows path. Dots and dashes are fine. (The template's comment asking
-  for alphanumeric IDs only is out of date; the wiki's rule applies.)
+- The mod ID is the project's `AssemblyName`, and it is also the mod's line
+  in `mods/loadorder` (one mod ID per line).
 - Prefix it with something of the author's to avoid collisions, for example
   `authorname.modname`.
+- The template's comment asking for alphanumeric IDs only is out of date;
+  the wiki's rule applies (dots and dashes are fine).
 
 ## Project file
 
-Copy the template's `.csproj` and keep its structure. The properties that
-matter:
+Copy the template's `.csproj` and keep its structure. Beyond the wiki's list
+of properties:
 
-| Property | Becomes | Notes |
-|---|---|---|
-| `AssemblyName` | manifest `Id`, DLL name | the mod ID; required |
-| `AssemblyTitle` | manifest `Name` | display name; may change |
-| `Product` | Windows file properties | usually the same as `AssemblyTitle` |
-| `Description` | manifest `Desc` | |
-| `Version` | manifest `Version` | NuGet version string; the SDK appends the commit hash under git |
-| `Authors` | manifest `Authors` | comma-separated |
-| `RepositoryUrl` | manifest `Link` | takes precedence over `FhManifestHomePage` |
-| `FhManifestHomePage` | manifest `Link` | used when there is no `RepositoryUrl` |
-| `FhManifestFlags` | manifest `Flags` | required; `NONE` or a comma-separated list |
-
-Do not override properties the SDK sets (target framework, runtime identifier,
-unsafe code and so on).
-
-Flags in current versions: `NONE`, and `SEPARATE_SAVES` (the mod gets its own
-save set). Check `FhManifestFlags` in the Fahrenheit source for the version in
-use.
+- `Version` is a NuGet version string; the SDK appends the commit hash when
+  the project is under git.
+- If `RepositoryUrl` is set, it becomes the manifest's `Link` and
+  `FhManifestHomePage` is ignored. The Manifests page states the opposite
+  order; the SDK's
+  [`Sdk.targets`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/sdk/Sdk/Sdk.targets)
+  decides.
+- `FhManifestFlags` is `NONE` or a comma-separated list. The only other flag
+  in current versions is `SEPARATE_SAVES` (the mod gets its own save set);
+  check `FhManifestFlags` in the Fahrenheit source for the version in use.
+- Do not override properties the SDK sets (target framework, runtime
+  identifier, unsafe code and so on).
 
 ## Manifest
 
-Every mod folder needs `<mod_id>.manifest.json` with `Id` equal to the folder
-name, or Fahrenheit refuses to start. Code mods get it generated at build
-time; never edit the generated file. File mods without code write it by hand:
-
-```json
-{
-    "Id": "authorname.modname",
-    "Name": "Readable name",
-    "Desc": "What it changes.",
-    "Authors": "Author",
-    "Version": "1.0.0",
-    "Link": "https://example.com/where-to-get-it",
-    "Dependencies": [],
-    "Flags": "NONE"
-}
-```
-
-`Dependencies` lists the mod IDs this mod needs. Load order no longer has to
-follow dependencies for DLLs to resolve; the field is meant for the upcoming
-mod manager. The SDK currently writes it as empty.
-
-## Folder layout
-
-```text
-mods/
-  loadorder                     one mod ID per line
-  <mod_id>/
-    <mod_id>.manifest.json
-    <mod_id>.dll                code mods only, with .deps.json, .runtimeconfig.json, .pdb
-    efl/x/...                   files replacing FFX_Data.vbf contents
-    efl/x2/...                  files replacing FFX2_Data.vbf contents
-    lang/<Module.Full.TypeName>/<locale>.json
-    resources/...               anything the mod wants
-```
-
-Players must not edit or delete files inside a mod folder.
+- Never edit the manifest the SDK generates for a code mod.
+- `Dependencies` lists the mod IDs this mod needs. The wiki does not describe
+  the field. Load order no longer has to follow dependencies for DLLs to
+  resolve; the field is meant for the upcoming mod manager, and the SDK
+  currently writes it as empty.
 
 ## File mods (`efl`)
 
-`efl/x` and `efl/x2` each stand for the root of the respective archive. Mirror
-the path inside the archive exactly:
-
-```text
-ffx_ps2/ffx/master/jppc/battle/kernel/takara.bin
-  -> efl/x/ffx_ps2/ffx/master/jppc/battle/kernel/takara.bin
-```
-
+The Mod structure page explains how `efl/x` and `efl/x2` mirror the archive.
 In a code mod, put the `efl` folder in the project; the SDK copies
-`efl/x/**` and `efl/x2/**` into the build output.
+`efl/x/**` and `efl/x2/**` into the build output
+([`Sdk.props`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/sdk/Sdk/Sdk.props)).
 
 ### Making the files
 
@@ -118,7 +81,7 @@ X-2.
 
 ## Sharing code between mods
 
-A mod can build against another mod's types:
+Not on the wiki. A mod can build against another mod's types:
 
 ```xml
 <ProjectReference Include="../othermod/othermod.csproj">

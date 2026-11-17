@@ -21,7 +21,7 @@ Search the mod for these patterns:
 | A hook on the main loop, new game, save or load | `FhApi.Events.Common.GameLoop` has these events | subscribe in `init` |
 | `GetAsyncKeyState`, a second input layer | `FhApi.Input` and ImGui | use those |
 | Its own base address arithmetic, memory read helpers | `FhUtil.ptr_at` / `get_at` / `set_at` | use those |
-| A delegate and `FhCallHandle` for a function `FhCall` already declares with a real signature | two declarations to keep in step | use the `FhCall` entry ([`ffx-mod/references/calls.md`](../../ffx-mod/references/calls.md#the-call-library)) |
+| A delegate and `FhCallHandle` for a function `FhCall` already declares with a real signature | two declarations to keep in step | use the `FhCall` entry ([`ffx-mod/references/calls.md`](../../ffx-mod/references/calls.md#a-function-without-a-signature)) |
 | Interfaces, factories or option objects with one implementation and one caller | more code than the mod needs | inline it |
 
 Shared libraries across a family of mods are fine for game logic and file
@@ -29,7 +29,8 @@ formats; flag them when they wrap Fahrenheit's own pieces.
 
 ## 2. Start-up and lifecycle
 
-Source: [`ffx-mod/references/runtime.md`](../../ffx-mod/references/runtime.md#startup-order).
+Source: the wiki's [Startup](https://github.com/fahrenheit-crew/fahrenheit/wiki/Startup) and [Modules](https://github.com/fahrenheit-crew/fahrenheit/wiki/Modules) pages, and
+[`ffx-mod/references/runtime.md`](../../ffx-mod/references/runtime.md#startup-order).
 
 - The constructor only sets fields and creates the settings provider and
   module handles. No game calls, no file reading that could fail silently.
@@ -43,7 +44,8 @@ Source: [`ffx-mod/references/runtime.md`](../../ffx-mod/references/runtime.md#st
 
 ## 3. Hooks and calls
 
-Source: [`ffx-mod/references/calls.md`](../../ffx-mod/references/calls.md).
+Source: the wiki's [Calls](https://github.com/fahrenheit-crew/fahrenheit/wiki/Calls) page and
+[`ffx-mod/references/calls.md`](../../ffx-mod/references/calls.md).
 
 - Each hook's delegate, `[UnmanagedCallConv]`, parameters and return type
   match each other and the game function. Mark any signature without a
@@ -97,7 +99,8 @@ Source: [SKILL.md rules (`ffx-mod/SKILL.md`)](../../ffx-mod/SKILL.md#rules-every
 
 ## 6. Project and packaging
 
-Source: [`ffx-mod/references/structure.md`](../../ffx-mod/references/structure.md),
+Source: the wiki's [Mod structure](https://github.com/fahrenheit-crew/fahrenheit/wiki/Mod-structure) and [Manifests](https://github.com/fahrenheit-crew/fahrenheit/wiki/Manifests) pages,
+[`ffx-mod/references/structure.md`](../../ffx-mod/references/structure.md),
 [`ffx-mod/references/troubleshooting.md`](../../ffx-mod/references/troubleshooting.md).
 
 - `AssemblyName` (the mod ID) is a valid file name, has an author prefix, and

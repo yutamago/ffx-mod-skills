@@ -19,6 +19,10 @@ When editing this repository:
   comes from a project that is not Fahrenheit, since the Fahrenheit team does
   not support those. Write in your own words; do not copy Fahrenheit's wiki or
   code.
+- Where a Fahrenheit wiki page covers a subject, do not restate it: link the
+  page, tell the agent to read it first, and keep only what the page lacks,
+  saying that it is not on the page. When the wiki gains the missing part,
+  remove it here.
 - Keep each `SKILL.md` short; put detail in its `references/`.
 - A skill may link to another skill's files with a relative path, and the
   link text names that skill and file, for example `ffx-mod/references/calls.md`,

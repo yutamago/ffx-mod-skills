@@ -12,7 +12,7 @@ own prologue and `ret`, and two or three of its callers.
 | Callee ends with plain `ret`; callers `add esp, N` after the call | `cdecl` | `CallingConvention.Cdecl` / `CallConvCdecl` |
 | Callee ends with `ret N`; nothing in `ECX` that the callee reads first | `stdcall` | `CallingConvention.StdCall` / `CallConvStdcall` |
 | Callee reads `ECX` before writing it (usually as an object pointer), ends with `ret N` or `ret` | `thiscall` | `CallingConvention.ThisCall` / `CallConvThiscall`; `ECX` is the first parameter |
-| Callee reads both `ECX` and `EDX` before writing them | `fastcall` or a custom convention | see below |
+| Callee reads `EDX`, `EAX`, `ESI` or `EDI` as an argument before writing it | a register convention the compiler made up | none; see below |
 
 `ret N` means the callee removes N bytes of arguments: N / 4 stack words.
 With `cdecl`, count the words from the callers' `push`es or from the size of
@@ -37,18 +37,26 @@ and `ThisCall` in both games (see `src/core/call.cs`, `src/core/ffx/call.cs` and
 
 ## Conventions a delegate cannot express
 
-Whole-program optimisation lets MSVC give internal functions custom
-conventions: arguments in `EAX`, `ESI` or `EDI`, `fastcall` where the caller
-pops, and so on. ffx-rust's `symbols/ffx.sym` comments call these out (for
-example `fastcall-caller-pops`, `ecx = … (no stack words)`).
+Apart from compiler helpers such as `__security_check_cookie`, neither game
+has a function declared `__fastcall`: that helper is the only entry with that
+convention in Fahrenheit's function lists
+([`src/step/data`](https://github.com/fahrenheit-crew/fahrenheit/tree/main/src/step/data)).
 
-.NET documents `CallingConvention.FastCall` as unsupported
-([CallingConvention](https://learn.microsoft.com/dotnet/api/system.runtime.interopservices.callingconvention)),
-and none of these custom conventions can be written as a delegate. Then:
+Whole-program optimisation still lets MSVC pass the arguments of internal
+functions in registers. ffx-rust's `symbols/ffx.sym` (not a Fahrenheit
+project) marks these in its comments with wording such as `fastcall(a, b)`
+or `fastcall-caller-pops`. For example, in the October 2026 `FFX.exe`,
+`0x0042e840` takes its two arguments in `ECX` and `EDX`, and `0x00401690`
+takes a third on the stack that the caller removes. Most are in bundled
+library code. A comment that names a single argument in `ECX` describes what
+a `ThisCall` delegate already expresses.
+
+No delegate can express an argument in `EDX` or another register. Then:
 
 1. Hook a caller or callee with a standard convention that sees the same
    data; or
-2. ask on the Fahrenheit Discord whether there is a supported way.
+2. tell the user they can ask on the Fahrenheit Discord whether there is a
+   supported way.
 
 Do not hook such a function with a guessed delegate. It will corrupt
 registers or the stack and crash later.

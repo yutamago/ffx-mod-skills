@@ -24,7 +24,7 @@ in this table. If it is there, use the built-in directly from the module.
 | Keys and buttons | `FhApi.Input` (controller actions), `FhApi.Gui.is_any_pressed` and ImGui for keys | polling `GetAsyncKeyState` |
 | Images in the UI | `FhApi.Resources` loads textures from disk or from the game | your own image loader; shipping game images |
 | A game sound | `FhApi.Audio.play_sound` | |
-| Translated strings | `lang/<Module.Type.Name>/<locale>.json` and `FhApi.Localization` ([runtime.md](runtime.md#localization)) | a string table of your own |
+| Translated strings | `lang/<Module.Type.Name>/<locale>.json` and `FhApi.Localization` (wiki: [Localization](https://github.com/fahrenheit-crew/fahrenheit/wiki/Localization)) | a string table of your own |
 | Game text (FFX encoding) | the encoders in `src/core/encoding.cs` | your own character table |
 | A game function | the `FhCall` entry, if its signature is real ([calls.md](calls.md)) | a second declaration of the same function |
 | Game memory at a fixed offset | `FhUtil.ptr_at<T>`, `get_at<T>`, `set_at<T>`; the structs and `Globals` in `src/core/ffx` and `src/core/ffx2` | your own base-address arithmetic and struct copies |

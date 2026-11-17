@@ -96,7 +96,8 @@ open issues or pull requests. Follow it:
 
 - Never open an issue or pull request on any `fahrenheit-crew` repository.
 - If a mod needs something Fahrenheit lacks (a function signature, an API, a
-  fix), tell the user to ask on the Discord in their own words.
+  fix), tell the user they can ask on the Discord or raise an issue
+  themselves, in their own words.
 - When reading or building Fahrenheit's source, follow the `AGENTS.md` in that
   repository.
 
@@ -116,7 +117,7 @@ The SDK publishes the mod and writes its manifest to
    folder, outside the game folder).
 2. Copy the mod folder into Fahrenheit's `mods/` folder.
 3. Add the mod ID on its own line in `mods/loadorder` (create the file if it is
-   missing; Fahrenheit will not start without it).
+   missing; without it Fahrenheit starts but loads no mods).
 4. Start the game through Fahrenheit: `bin\fhstage0.exe <path to FFX.exe>`
    for FFX, `bin\fhstage0.exe <path to FFX-2.exe>` for X-2, and
    `bin\fhstage0.exe <path to FFX-2.exe> FFX2_LASTMISSION` for Last Mission.
@@ -182,7 +183,11 @@ model that did the research and the evidence for each finding (see
 
 ## Getting help
 
-- Fahrenheit wiki: https://github.com/fahrenheit-crew/fahrenheit/wiki
+- Fahrenheit wiki: https://github.com/fahrenheit-crew/fahrenheit/wiki.
+  The references name the wiki page to read for each subject and add only
+  what the page lacks. If you cannot open web pages, clone
+  `https://github.com/fahrenheit-crew/fahrenheit.wiki.git`: each page is one
+  Markdown file.
 - Discord, Cid's Salvage Ship: https://discord.gg/AGx2grw9nD
 
 When the user should ask the Fahrenheit developers something, say so and give
@@ -193,7 +198,7 @@ them the link; do not contact anyone on their behalf.
 - [references/builtins.md](references/builtins.md): what Fahrenheit already provides, so mods don't rebuild it
 - [references/versions.md](references/versions.md): Fahrenheit versions and game builds
 - [references/structure.md](references/structure.md): mod ID, project file, manifest, folders, file mods
-- [references/calls.md](references/calls.md): calling and hooking game functions
+- [references/calls.md](references/calls.md): calling and hooking game functions: what the wiki's Calls page leaves out
 - [references/runtime.md](references/runtime.md): modules, startup order, state, settings, localization
 - [references/converting.md](references/converting.md): moving ASI, proxy-DLL and External File Loader mods to Fahrenheit
 - [references/troubleshooting.md](references/troubleshooting.md): build and launch problems

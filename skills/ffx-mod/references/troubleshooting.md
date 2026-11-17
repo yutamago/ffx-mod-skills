@@ -1,35 +1,38 @@
 # Troubleshooting
 
-Wiki: [Compatibility guide](https://github.com/fahrenheit-crew/fahrenheit/wiki/Compatibility-guide),
-[Installation guide](https://github.com/fahrenheit-crew/fahrenheit/wiki/Installation-guide).
+Read the wiki's
+[Compatibility guide](https://github.com/fahrenheit-crew/fahrenheit/wiki/Compatibility-guide)
+first for problems with the game version, running as administrator, Linux,
+and other tools (Special K, RivaTuner, Malwarebytes, older file loaders).
+The [Installation guide](https://github.com/fahrenheit-crew/fahrenheit/wiki/Installation-guide)
+covers prerequisites and launching, and the
+[SDK](https://github.com/fahrenheit-crew/fahrenheit/wiki/SDK) page covers a
+local SDK that is ignored after a rebuild. The symptoms below are not on
+those pages ([how to read the wiki offline](../SKILL.md#getting-help)).
 
 ## Build
 
 | Symptom | Cause and fix |
 |---|---|
 | `The SDK 'Fahrenheit.Sdk/x' specified could not be found` | That version is not on NuGet (yet). Use a published version, or a local SDK ([versions.md](versions.md)). |
-| A newly built local SDK is ignored | Clear the local NuGet caches after every rebuild of Fahrenheit. |
 | Fahrenheit DLLs appear in the mod's output | A reference to Fahrenheit or another mod is missing `Private=false` / `ExcludeAssets=runtime;native`. |
-| Build errors in a cloned path | The path contains special characters; move the clone. |
 
 ## Launch
 
 | Symptom | Cause and fix |
 |---|---|
-| Fahrenheit exits at once | `mods/loadorder` is missing, or a listed mod has no valid manifest whose `Id` equals its folder name. |
+| Fahrenheit exits at once | A mod listed in `loadorder` has no valid manifest whose `Id` equals its folder name. |
 | Crashes at boot or early in the game | Game build and Fahrenheit version do not match ([versions.md](versions.md)); or a hook has the wrong signature. |
-| Mod not listed in the top-left corner | Its ID is not in `loadorder`, its folder name differs from the ID, or no module's `[FhLoad]` includes the running game. |
+| No mods are listed in the top-left corner | `mods/loadorder` is missing or unreadable. Fahrenheit logs a warning and loads only its own runtime ([`src/core/bootloader.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/bootloader.cs)). |
+| One mod is not listed in the top-left corner | Its ID is not in `loadorder`, its folder name differs from the ID, or no module's `[FhLoad]` includes the running game. |
 | Hook never runs | It was registered outside `init`, or an earlier mod's hook does not chain. |
-| UAC shield on the game executable | "Run as administrator" is enabled; turn it off. Running as administrator is unsupported. |
-| Special K deadlocks on boot | Pass `--extdbg` in the launch options. |
-| Fahrenheit's interface does not show with RivaTuner | Enable "Use Microsoft Detours API hooking" in RTSS. |
-| Linux graphics problems | Use DXVK; `PROTON_USE_WINED3D=1` is unsupported. |
 
 ## Crashes
 
-The launcher prints a stack trace with both .NET and native frames and writes
-a dump to `crash/`. Logs are in `logs/<session>/`, one file per module plus
-the framework's. Open the dump in WinDbg or Visual Studio. When asking for
-help, include the session's log folder zipped and the dump.
+The wiki's
+[Install structure](https://github.com/fahrenheit-crew/fahrenheit/wiki/Install-structure)
+page says where dumps (`crash/`) and logs (`logs/<session>/`) are and what
+to send with a report. In addition, the launcher prints a stack trace with
+both .NET and native frames; open the dump in WinDbg or Visual Studio.
 
 Before blaming Fahrenheit, disable all other mods and check again.

@@ -103,7 +103,8 @@ instruction file (`AGENTS.md`, `.cursorrules`, …) can be pointed at
 Corrections are welcome. Every statement should be checkable against the
 Fahrenheit wiki or source, or for game internals against another public
 source (ffx-rust, Atel#, FFXDataParser); link the page it comes from, and
-write it in your own words.
+write it in your own words. Do not restate what a Fahrenheit wiki page
+already says: link the page and add only what it lacks.
 
 Before a pull request, run `python3 tools/check.py`. It checks that every
 manifest has the same name, version and description, that each skill's
