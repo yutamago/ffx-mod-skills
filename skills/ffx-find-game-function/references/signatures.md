@@ -28,24 +28,37 @@ that register just before the `call`. These do not count:
 Check the last row first: a function that matches it is not `cdecl`,
 `stdcall` or `thiscall`, even if it also fits one of those rows.
 
-`ret N` means the callee removes N bytes of arguments: N / 4 stack words.
-When the caller cleans up, do not count from the size of its `add esp, N`:
-MSVC often merges the cleanup of several calls into one later `add esp`, or
-puts it behind a jump. In the `FFX.exe` named below, the code from
-`0x00401bf0` to `0x00401c18` (inside the function at `0x00401930`) makes two
-calls that push one word each, and one `add esp, 8` cleans up after both.
-MSVC also removes a single word with `pop ecx` right after a call; that is
-cleanup, not an argument. Count what the caller put on the stack since the
-previous call instead: each `push`, and `sub esp, 8` followed by
-`fstp qword ptr [esp]` for a `double`. Check that against the `[esp+…]` /
-`[ebp+8+…]` slots the callee reads.
+### How many stack words
+
+The callee decides. `ret N` means it removes N bytes: N / 4 stack words.
+Otherwise, find the highest stack slot it reads: `[ebp+0x8]` is the first
+word after `push ebp; mov ebp, esp`, `[ebp+0xc]` the second, and so on
+(without that frame, `[esp+4]` at entry is the first). Check every path
+through the function, not only the first few instructions.
+
+The callers only confirm it, and are easy to miscount:
+
+- MSVC often merges the cleanup of several calls into one later
+  `add esp, N`, or puts it behind a jump, so the size of `add esp` is not
+  the argument count.
+- `pop ecx` right after a call removes one word; it is cleanup, not an
+  argument.
+- A caller may push the later arguments, call another function to compute
+  the first, then push its result: `push x; push y; call g; add esp, 4;
+  push eax; call f` gives `f` two words, not one.
+- `sub esp, 8` followed by `fstp qword ptr [esp]` passes a `double`.
+
+If the callers and the callee disagree, the callee's reads win.
 
 Fahrenheit's own hand-checked `FhCall` entries use only `Cdecl`, `StdCall`
-and `ThisCall` in both games (see `src/core/call.cs`, `src/core/ffx/call.cs` and
-`src/core/ffx2/call.cs`). Its generated call files have one `FastCall`
-delegate, shared by both games: `FUN_0054923A_0047D890` in
-`src/core/call_1.g.cs`, which is `__security_check_cookie`, a compiler
-helper, not a function to hook.
+and `ThisCall` in both games (see
+[`src/core/call.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/call.cs),
+[`src/core/ffx/call.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/ffx/call.cs) and
+[`src/core/ffx2/call.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/ffx2/call.cs)). Its generated call
+files have one `FastCall` delegate, shared by both games:
+`FUN_0054923A_0047D890` in
+[`src/core/call_1.g.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/call_1.g.cs), which is
+`__security_check_cookie`, a compiler helper, not a function to hook.
 
 ## Arguments and return value
 

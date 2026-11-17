@@ -41,13 +41,19 @@ and goes on to the next module
   `load_local_state`;
 - other modules still get it through `FhModuleHandle<T>`.
 
-So return `false` only when the module cannot work, and before it hooks or
-subscribes anything. During `init`, `hook()` returns `false` only when the
-target cannot be found, for example an `FFX.exe` offset while X-2 runs
-(`hook` and `chain_add` in [`src/core/handles.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/handles.cs)).
-If a later `hook()` fails after earlier ones succeeded, set a field that
-marks the module disabled, have its hooks check it (and still chain) and its
-other callbacks return early, and return `true`.
+So the return value only chooses Fahrenheit's log line. When something in
+`init` fails, for example a `hook()` call (during `init` it returns `false`
+only when the target cannot be found, such as an `FFX.exe` offset while X-2
+runs: `hook` and `chain_add` in
+[`src/core/handles.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/handles.cs)):
+
+1. log why through `_logger`;
+2. set a field that marks the module disabled;
+3. have its hooks check that field (and still chain), and its
+   `render_imgui`, state callbacks and event handlers return early;
+4. return `false`, so the framework log also says the module failed.
+
+Do not rely on the return value alone to switch the module off.
 
 ## State
 

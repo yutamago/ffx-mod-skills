@@ -59,7 +59,7 @@ are 32-bit x86. Fahrenheit's hand-checked `FhCall` entries use `cdecl`,
 `stdcall` and `thiscall` (object pointer in `ECX`), and a delegate can
 express all three. Its function lists
 ([`src/step/data`](https://github.com/fahrenheit-crew/fahrenheit/tree/main/src/step/data))
-record a convention for only about 160 functions per game (155 in FFX, 163 in X-2); most entries say
+record a convention for only 155 functions in FFX and 163 in X-2; most entries say
 `unknown`, so work it out from the machine code.
 
 If a function's convention is unclear, look at how its callers set up the
