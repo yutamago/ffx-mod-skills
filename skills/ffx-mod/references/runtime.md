@@ -78,9 +78,11 @@ Also not on the wiki: `load_local_state` is not called when the loaded save
 has no state file for the module
 ([`src/core/state.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/state.cs), `state_load_slot`). Fields
 filled from the previously loaded save then remain, and the next save writes
-them into the new one. Reset per-save fields yourself when a save is loaded:
-`PostLoadGame` is raised after the state callbacks on every load
-([`src/runtime/save_impl.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/runtime/save_impl.cs)).
+them into the new one. `PostLoadGame` is raised on every load, but after the
+state callbacks
+([`src/runtime/save_impl.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/runtime/save_impl.cs)), so a reset
+there must apply only when `load_local_state` did not run for that load: set
+a flag in `load_local_state`, and check and clear it in `PostLoadGame`.
 
 ## Settings
 

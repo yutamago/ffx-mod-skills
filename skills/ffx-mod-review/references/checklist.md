@@ -111,7 +111,8 @@ Source: [SKILL.md rules (`ffx-mod/SKILL.md`)](../../ffx-mod/SKILL.md#rules-every
 - `SEPARATE_SAVES` is set if saves made with the mod would break the vanilla
   game.
 - Per-save fields are reset when a save without state for the module is
-  loaded; `load_local_state` is not called for it
+  loaded (`load_local_state` is not called for it), and not when it was
+  called (`PostLoadGame` runs after it)
   ([`ffx-mod/references/runtime.md`](../../ffx-mod/references/runtime.md#state)).
 
 ## 6. Project and packaging

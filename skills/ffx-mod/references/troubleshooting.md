@@ -31,7 +31,7 @@ The symptoms below are not on those pages ([how to read the wiki offline](../SKI
 | A mod is listed but its code never runs | The manifest's `Id` differs from the folder and DLL name, so Fahrenheit looks for a DLL that does not exist; or a module has no `[FhLoad]` or one without the running game (the framework log says `Loader ignored module type …`), or the module class is not public (skipped without a log line). See `load_mod` in [`src/core/bootloader.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/bootloader.cs). |
 | Hook never runs: registered after `init` | The function was hooked by some mod during `init`, so later hooks are rejected; the framework log says `Late insertion rejected`. |
 | Hook never runs: another mod | A mod later in `loadorder` hooks the same function and does not chain ([calls.md](calls.md#which-hook-runs-first)). |
-| Hook never runs: `hook()` returned `false` | The target was not found ([runtime.md](runtime.md#startup-order)). Nothing is logged for an offset in a module that is not loaded; a missing export logs `No export`. |
+| Hook never runs: `hook()` returned `false` | The target was not found ([runtime.md](runtime.md#startup-order)). Nothing is logged when the module is not loaded; a missing export in a loaded module logs `No export`. |
 | Hook never runs: installation failed | A queued hook failed to install. Fahrenheit stops there, so every hook of any mod not yet installed stays uninstalled. The framework log shows `MH_CreateHook() failed` or `MH_EnableHook() failed`; check that the offset is the start of a function in this game build (`chain_finalize` in [`src/core/handles.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/handles.cs)). |
 
 ## Crashes
