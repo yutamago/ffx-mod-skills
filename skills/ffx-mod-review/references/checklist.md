@@ -37,7 +37,8 @@ Source: the wiki's [Startup](https://github.com/fahrenheit-crew/fahrenheit/wiki/
 - Every hook is registered in `init`. `init` returns `false` only before it
   hooks or subscribes anything; a module that hooks several functions does
   not just return the last `hook` result, because a `false` leaves its
-  earlier hooks running
+  earlier hooks running. It checks each result and, on a failure, sets a
+  field its hooks and callbacks check
   ([`ffx-mod/references/runtime.md`](../../ffx-mod/references/runtime.md#startup-order)).
 - No game function is called from the constructor or from `init`.
 - `init` does not assume another mod's `init` has run, unless that mod is

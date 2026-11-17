@@ -11,8 +11,6 @@ pages do not say ([how to read the wiki offline](../SKILL.md#getting-help)).
 
 ## Mod ID
 
-- The mod ID is also the mod's line in `mods/loadorder` (one mod ID per
-  line).
 - Prefix it with something of the author's to avoid collisions, for example
   `authorname.modname`.
 - The template's comment asking for alphanumeric IDs only is out of date;

@@ -9,10 +9,10 @@ own prologue and `ret`, and two or three of its callers.
 
 | What you see | Convention | C# |
 |---|---|---|
-| Callee takes no register argument; ends with plain `ret`; callers `add esp, N` after the call | `cdecl` | `CallingConvention.Cdecl` / `CallConvCdecl` |
+| Callee takes no register argument; ends with plain `ret`; callers clean up with `add esp, N` somewhere after the call (no arguments: nothing to clean up) | `cdecl` | `CallingConvention.Cdecl` / `CallConvCdecl` |
 | Callee takes no register argument; ends with `ret N` | `stdcall` | `CallingConvention.StdCall` / `CallConvStdcall` |
 | Callee takes an argument in `ECX` and in no other register, usually an object pointer; ends with `ret N`, or with plain `ret` only when it reads no stack arguments | `thiscall` | `CallingConvention.ThisCall` / `CallConvThiscall`; `ECX` is the first parameter |
-| Callee takes an argument in `EDX`, `EAX`, `ESI` or `EDI`; or takes one in `ECX` plus stack arguments, ends with plain `ret`, and its callers `add esp, N` afterwards | a register convention the compiler chose | none; see below |
+| Callee takes an argument in `EDX`, `EAX`, `EBX`, `ESI`, `EDI` or any other register besides `ECX`; or takes one in `ECX` plus stack arguments, ends with plain `ret`, and its callers clean up the stack | a register convention the compiler chose | none; see below |
 
 A function **takes an argument in a register** when it uses the register's
 incoming value as data: it copies it (`mov edi, ecx`), compares it
@@ -29,13 +29,18 @@ Check the last row first: a function that matches it is not `cdecl`,
 `stdcall` or `thiscall`, even if it also fits one of those rows.
 
 `ret N` means the callee removes N bytes of arguments: N / 4 stack words.
-With `cdecl`, count the words from the callers' `push`es or from the size of
-their `add esp, N`, and check which `[esp+…]` / `[ebp+8+…]` slots the callee
-reads.
+When the caller cleans up, do not count from the size of its `add esp, N`:
+MSVC often merges the cleanup of several calls into one later `add esp`, or
+puts it behind a jump. For example, at `FFX.exe` `0x00401bf0` one
+`add esp, 8` cleans up after two calls that pushed one word each. Count the
+`push`es since the previous call instead, and check them against the
+`[esp+…]` / `[ebp+8+…]` slots the callee reads.
 
 Fahrenheit's own hand-checked `FhCall` entries use only `Cdecl`, `StdCall`
 and `ThisCall` in both games (see `src/core/call.cs`, `src/core/ffx/call.cs` and
-`src/core/ffx2/call.cs`).
+`src/core/ffx2/call.cs`). Its generated call files have one `FastCall`
+delegate per game, `FUN_0054923A_0047D890` in `src/core/call_1.g.cs`: that is
+`__security_check_cookie`, a compiler helper, not a function to hook.
 
 ## Arguments and return value
 

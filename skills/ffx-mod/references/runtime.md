@@ -23,8 +23,10 @@ say ([how to read the wiki offline](../SKILL.md#getting-help)).
 The wiki gives the rules per stage but not the order across mods:
 
 1. Every module of every mod is constructed.
-2. Every module's `init` runs, mod by mod in load order.
-3. The game starts.
+2. Every module's `init` runs, mod by mod in load order. Hooks added here are
+   only queued.
+3. All queued hooks are installed (`chain_finalize` in
+   [`src/core/handles.cs`](https://github.com/fahrenheit-crew/fahrenheit/blob/main/src/core/handles.cs)), and the game starts.
 
 So a module can fetch another module with `FhModuleHandle<T>` in `init`
 regardless of load order, but it can rely on the other module's `init` having
@@ -40,8 +42,11 @@ and goes on to the next module
 - other modules still get it through `FhModuleHandle<T>`.
 
 So return `false` only when the module cannot work, and before it hooks or
-subscribes anything. If it can fail later, keep a field that says so and
-check it in its other callbacks.
+subscribes anything. During `init`, `hook()` returns `false` only when the
+target cannot be found, for example an `FFX.exe` offset while X-2 runs. If a
+later `hook()` fails after earlier ones succeeded, set a field that marks the
+module disabled and have its hooks check it (and still chain) and its other
+callbacks return early.
 
 ## State
 
